@@ -31,7 +31,7 @@ const total = 4;
         <span class="funnel__dot" data-dot={i}></span>
       ))}
     </div>
-    <span class="wordmark funnel__brand">TechSinHumo</span>
+    <a class="wordmark funnel__brand" href="/">TechSinHumo</a>
   </div>
 
   <div class="funnel__body">
@@ -62,7 +62,7 @@ const total = 4;
     <div class="fstep" data-panel="1" hidden>
       <p class="t-eyebrow fstep__eyebrow">Paso 2 de 4</p>
       <h2 class="t-h2 fstep__title">¿Con quién estás ahora?</h2>
-      <p class="t-lede fstep__lede fstep__lede--mid">Para descontar tu permanencia y compararte de forma justa.</p>
+      <p class="t-lede fstep__lede fstep__lede--mid">Para revisar y compararte de forma justa.</p>
       <div class="pgrid">
         {PROVIDERS.map((p) => (
           <button class="pchip" type="button" data-provider={p.id} data-conversion-event="funnel_provider_selected">
@@ -115,7 +115,7 @@ const total = 4;
             <div class="lab">vs. lo que pagas</div>
           </div>
           <Button variant={i === 0 ? 'primary' : 'secondary'} size="sm" data-conversion-event="funnel_offer_click">
-            Activar
+            Elegir
           </Button>
         </div>
       ))}
@@ -296,6 +296,7 @@ const total = 4;
   .fstep__lede--wide { max-width: 30ch; }
   .fstep__actions { margin-top: clamp(28px, 5vw, 40px); display: flex; flex-direction: column; gap: 14px; align-items: center; }
   .amount--center { margin-inline: auto; }
+  .amount__euro { font-size: 4em; }
   .funnel__phone { max-width: 360px; margin-inline: auto; }
   .funnel__phone-err { display: block; margin-top: 8px; text-align: left; }
   .funnel__skip { color: var(--c-fg-muted); }
