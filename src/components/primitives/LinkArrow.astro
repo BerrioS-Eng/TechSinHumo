@@ -1,0 +1,14 @@
+---
+/*
+  LinkArrow.astro — link con chevron "›" (patrón Apple). Usa el color de acento.
+*/
+interface Props {
+  href?: string;
+  class?: string;
+  [key: string]: any;
+}
+const { href = '#', class: className = '', ...rest } = Astro.props;
+---
+<a class={`link-arrow ${className}`} href={href} {...rest}>
+  <slot /><span class="chev" aria-hidden="true">›</span>
+</a>

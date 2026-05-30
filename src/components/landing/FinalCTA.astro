@@ -1,0 +1,32 @@
+---
+/*
+  FinalCTA.astro — cierre. Un titular grande, una línea y un único CTA.
+  El botón abre el funnel (data-open-funnel); el link secundario va a "Cómo funciona".
+*/
+import Button from '../primitives/Button.astro';
+import Icon from '../primitives/Icon.astro';
+import LinkArrow from '../primitives/LinkArrow.astro';
+---
+<section class="section" id="empezar" aria-labelledby="final-title">
+  <div class="wrap wrap--content finalcta">
+    <div class="reveal">
+      <h2 id="final-title" class="t-display finalcta__title">¿Cuánto pagas<br />ahora mismo?</h2>
+      <p class="t-lede finalcta__lede">
+        Una cifra es todo lo que necesitamos para enseñarte tu ahorro.
+      </p>
+      <div class="finalcta__actions">
+        <Button variant="primary" size="lg" data-open-funnel data-conversion-event="cta_final_click">
+          Empezar ahora <Icon name="arrow" size={17} />
+        </Button>
+        <LinkArrow href="#como">Cómo funciona</LinkArrow>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .finalcta { text-align: center; }
+  .finalcta__title { margin-bottom: var(--stack-md); font-size: clamp(36px, 6vw, 72px); }
+  .finalcta__lede { margin-inline: auto; max-width: 32ch; }
+  .finalcta__actions { margin-top: var(--stack-lg); display: flex; gap: 18px; justify-content: center; align-items: center; flex-wrap: wrap; }
+</style>

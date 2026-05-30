@@ -1,0 +1,56 @@
+---
+import Button from '../primitives/Button.astro';
+import Icon from '../primitives/Icon.astro';
+
+const links = [
+  { label: 'Cómo funciona', id: 'como' },
+  { label: 'Operadores', id: 'operadores' },
+  { label: 'Metodología', id: 'metodologia' },
+  { label: 'Sin Humo', id: 'blog' },
+];
+---
+<header class="hdr" id="site-header">
+  <div class="hdr__inner">
+    <a class="wordmark" href="#top">TechSinHumo</a>
+    <nav class="hdr__nav" aria-label="Principal">
+      {links.map((l) => <a href={`#${l.id}`}>{l.label}</a>)}
+    </nav>
+    <Button variant="primary" size="sm" class="hdr__cta" data-open-funnel>
+      <span class="label-full">Empezar</span>
+      <Icon name="arrow" size={15} />
+    </Button>
+  </div>
+</header>
+
+<script>
+  // borde inferior sutil al hacer scroll (header sticky con blur)
+  const hdr = document.getElementById('site-header');
+  const onScroll = () => hdr?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+
+<style>
+  .hdr {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in oklch, var(--c-bg) 82%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s var(--ease-apple);
+  }
+  .hdr.is-scrolled { border-bottom-color: var(--c-border); }
+  .hdr__inner {
+    max-width: var(--max-w-wide); margin-inline: auto; padding-inline: var(--gutter);
+    height: 52px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .wordmark { font-family: var(--font-display); font-weight: 600; font-size: 19px; letter-spacing: -0.03em; color: var(--c-fg); }
+  .hdr__nav { display: flex; align-items: center; gap: 30px; }
+  .hdr__nav a { font-size: 14px; color: var(--c-fg); transition: color 0.2s var(--ease-apple); }
+  .hdr__nav a:hover { color: var(--c-fg-muted); }
+
+  @media (max-width: 720px) {
+    .hdr__nav { display: none; }
+    .hdr__cta .label-full { display: none; }
+  }
+</style>

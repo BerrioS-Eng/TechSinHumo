@@ -1,0 +1,119 @@
+---
+import Button from '../primitives/Button.astro';
+import Badge from '../primitives/Badge.astro';
+import Icon from '../primitives/Icon.astro';
+import LinkArrow from '../primitives/LinkArrow.astro';
+import { OFFERS, fmtSave } from '../../data/offers';
+---
+<section class="section section--surface" id="operadores" aria-labelledby="feat-title">
+  <div class="wrap">
+    <div class="cmp__head reveal">
+      <div>
+        <p class="t-eyebrow">Esta semana · Fibra 600 Mb</p>
+        <h2 id="feat-title" class="t-h2 cmp__title">Cuatro ofertas, comparadas de verdad</h2>
+      </div>
+      <LinkArrow href="#operadores" data-open-funnel>Ver las 87</LinkArrow>
+    </div>
+
+    <div class="reveal">
+      <!-- Tabla (desktop): legible, fila recomendada destacada con espacio, no con caja pesada -->
+      <table class="ctable">
+        <thead>
+          <tr>
+            <th>Operador</th><th>Fibra</th><th>Móvil</th><th>Permanencia</th>
+            <th class="num">Precio</th><th class="num"><span class="sr-only">Acción</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {OFFERS.map((o) => (
+            <tr class={o.rec ? 'is-rec' : ''}>
+              <td>
+                <div class="cop">
+                  <span class="cop__name">{o.op}</span>
+                  {o.rec && <Badge variant="accent">{o.tag}</Badge>}
+                </div>
+              </td>
+              <td class="cspec">{o.fibre}</td>
+              <td class="cspec">{o.mobile}</td>
+              <td class="cspec">{o.perm}</td>
+              <td class="num">
+                <div class="cprice tnum">{o.price}<span class="cprice__unit"> €</span></div>
+                <div class="csave">−{fmtSave(o.save)}</div>
+              </td>
+              <td class="num cell-cta">
+                <Button variant={o.rec ? 'primary' : 'ghost'} size="sm" data-open-funnel data-step="2" data-conversion-event="funnel_offer_click">
+                  Quiero esta <Icon name="arrow" size={14} />
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <!-- Tarjetas-aire (fallback móvil): mismo contenido, sin borde ni sombra -->
+      <div class="ccards">
+        {OFFERS.map((o) => (
+          <div class={`ccard${o.rec ? ' is-rec' : ''}`}>
+            <div class="t-mono" style={o.rec ? 'color:var(--c-accent)' : ''}>{o.tag}</div>
+            <div class="ccard__name">{o.op}</div>
+            <div class="ccard__price tnum">{o.price}<span class="u"> €/mes</span></div>
+            <div class="ccard__save">Ahorras {fmtSave(o.save)}</div>
+            <ul class="ccard__specs">
+              <li><span class="k">Fibra</span><span>{o.fibre}</span></li>
+              <li><span class="k">Móvil</span><span>{o.mobile}</span></li>
+              <li><span class="k">Perm.</span><span>{o.perm}</span></li>
+            </ul>
+            <Button variant={o.rec ? 'primary' : 'secondary'} size="sm" class="ccard__cta" data-open-funnel data-step="2" data-conversion-event="funnel_offer_click">
+              Quiero esta <Icon name="arrow" size={14} />
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cmp__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: clamp(32px, 5vw, 56px); }
+  .cmp__title { margin-top: 12px; max-width: 18ch; }
+
+  /* — tabla — */
+  .ctable { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .ctable thead th {
+    text-align: left; font-family: var(--font-body); font-weight: 400;
+    font-size: 13px; color: var(--c-fg-muted); letter-spacing: -0.005em;
+    padding: 0 18px 16px; border-bottom: 1px solid var(--c-border); white-space: nowrap;
+  }
+  .ctable thead th.num, .ctable td.num { text-align: right; }
+  .ctable tbody td { padding: 22px 18px; border-bottom: 1px solid var(--c-border); vertical-align: middle; }
+  .ctable tbody tr:last-child td { border-bottom: 0; }
+  .ctable tbody tr.is-rec td { background: var(--c-bg); }
+  .ctable tbody tr.is-rec td:first-child { border-top-left-radius: 14px; border-bottom-left-radius: 14px; }
+  .ctable tbody tr.is-rec td:last-child { border-top-right-radius: 14px; border-bottom-right-radius: 14px; }
+  .cop { display: flex; align-items: center; gap: 12px; }
+  .cop__name { font-family: var(--font-display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; }
+  .cspec { font-size: 16px; color: var(--c-fg); }
+  .cprice { font-family: var(--font-display); font-weight: 600; font-size: 30px; letter-spacing: -0.03em; }
+  .cprice__unit { font-size: 14px; color: var(--c-fg-muted); font-weight: 400; margin-left: 2px; }
+  .csave { font-size: 14px; color: var(--c-accent); margin-top: 2px; }
+  .cell-cta { text-align: right; white-space: nowrap; }
+
+  /* — tarjetas (fallback) — */
+  .ccards { display: none; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 40px); }
+  .ccard { display: flex; flex-direction: column; gap: 6px; padding-top: 26px; border-top: 1px solid var(--c-border); }
+  .ccard.is-rec { border-top-color: var(--c-accent); }
+  .ccard__name { font-family: var(--font-display); font-weight: 600; font-size: 24px; letter-spacing: -0.02em; }
+  .ccard__price { font-family: var(--font-display); font-weight: 600; font-size: clamp(40px, 5vw, 52px); letter-spacing: -0.04em; line-height: 1; margin-top: 8px; }
+  .ccard__price .u { font-size: 15px; color: var(--c-fg-muted); font-weight: 400; }
+  .ccard__save { font-size: 14px; color: var(--c-accent); }
+  .ccard__specs { margin-top: 16px; display: flex; flex-direction: column; gap: 7px; font-size: 15px; }
+  .ccard__specs li { display: flex; gap: 10px; }
+  .ccard__specs .k { color: var(--c-fg-muted); min-width: 34px; }
+  .ccard__cta { margin-top: 22px; }
+
+  @media (max-width: 860px) {
+    .ctable { display: none; }
+    .ccards { display: grid; }
+  }
+  @media (max-width: 560px) { .ccards { grid-template-columns: 1fr; } }
+</style>

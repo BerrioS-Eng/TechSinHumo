@@ -1,0 +1,39 @@
+---
+/*
+  Icon.astro — iconos de trazo (sin relleno decorativo).
+  Uso: <Icon name="arrow" size={16} />
+*/
+interface Props {
+  name: 'check' | 'arrow' | 'close' | 'back' | 'menu';
+  size?: number;
+  class?: string;
+}
+const { name, size = 18, class: className } = Astro.props;
+---
+<svg
+  viewBox="0 0 18 18"
+  width={size}
+  height={size}
+  class={className}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  style="display:block;flex:none"
+  aria-hidden="true"
+>
+  {name === 'check' && <polyline points="3.5 9 7 12.5 14.5 5" />}
+  {name === 'arrow' && (
+    <g><line x1="3" y1="9" x2="14" y2="9" /><polyline points="9.5 4.5 14.5 9 9.5 13.5" /></g>
+  )}
+  {name === 'close' && (
+    <g><line x1="4" y1="4" x2="14" y2="14" /><line x1="14" y1="4" x2="4" y2="14" /></g>
+  )}
+  {name === 'back' && (
+    <g><line x1="15" y1="9" x2="4" y2="9" /><polyline points="8.5 4.5 3.5 9 8.5 13.5" /></g>
+  )}
+  {name === 'menu' && (
+    <g><line x1="3" y1="6" x2="15" y2="6" /><line x1="3" y1="12" x2="15" y2="12" /></g>
+  )}
+</svg>

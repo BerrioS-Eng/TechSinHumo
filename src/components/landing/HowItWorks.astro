@@ -1,0 +1,33 @@
+---
+const steps = [
+  { n: '01', title: 'Dinos cuánto pagas', body: 'Solo una cifra. Sin nombre ni email. Es el punto de partida para calcular tu ahorro real.' },
+  { n: '02', title: 'Elige tu compañía', body: 'Para descontar permanencia y descuentos que ya tienes, y compararte de forma justa.' },
+  { n: '03', title: 'Mira lo que ahorras', body: 'Ofertas de 87 operadores ordenadas por ahorro neto. Si una te interesa, te conectamos.' },
+];
+---
+<section class="section" id="como" aria-labelledby="how-title">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="t-eyebrow center">Cómo funciona</p>
+      <h2 id="how-title" class="t-h2 center how__head">Tres preguntas. Doce segundos.</h2>
+    </div>
+    <div class="how__grid">
+      {steps.map((s) => (
+        <div class="step reveal">
+          <div class="step__n">{s.n}</div>
+          <h3 class="t-h3 step__title">{s.title}</h3>
+          <p class="t-body step__body">{s.body}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .how__head { margin-top: 16px; max-width: 16ch; margin-inline: auto; }
+  .how__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(32px, 5vw, 72px); margin-top: clamp(40px, 6vw, 72px); }
+  .step__n { font-family: var(--font-display); font-weight: 600; font-size: 17px; color: var(--c-accent); }
+  .step__title { margin-top: 14px; }
+  .step__body { margin-top: 12px; }
+  @media (max-width: 760px) { .how__grid { grid-template-columns: 1fr; gap: 44px; } }
+</style>

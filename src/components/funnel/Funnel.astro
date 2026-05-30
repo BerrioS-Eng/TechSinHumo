@@ -1,0 +1,335 @@
+---
+/*
+  Funnel.astro — overlay full-screen de 4 pasos.
+  Versión Astro (sin React): el DOM de los 4 pasos se renderiza una vez y un
+  pequeño script gestiona el estado (paso actual, factura, operador, teléfono).
+
+  Apertura:
+    - clic en cualquier [data-open-funnel] (opcional data-step="N", data-paid="X")
+    - evento global: window.dispatchEvent(new CustomEvent('funnel:open', { detail: { paid, step } }))
+
+  Eventos de conversión: se conservan los data-conversion-event del original.
+*/
+import Button from '../primitives/Button.astro';
+import Icon from '../primitives/Icon.astro';
+import Field from '../primitives/Field.astro';
+import { OFFERS, fmtSave } from '../../data/offers';
+import { PROVIDERS } from '../../data/provider';
+
+const ranked = [...OFFERS].sort((a, b) => b.save - a.save);
+const total = 4;
+---
+<div class="funnel" id="funnel" role="dialog" aria-modal="true" aria-label="Comparativa" hidden>
+  <div class="funnel__bar">
+    <button class="funnel__close" id="funnel-back" type="button">
+      <Icon name="close" size={16} class="funnel__back-icon" />
+      <Icon name="back" size={16} class="funnel__back-icon funnel__back-icon--back" />
+      <span class="funnel__back-label">Cerrar</span>
+    </button>
+    <div class="funnel__progress" aria-hidden="true">
+      {Array.from({ length: total }).map((_, i) => (
+        <span class="funnel__dot" data-dot={i}></span>
+      ))}
+    </div>
+    <span class="wordmark funnel__brand">TechSinHumo</span>
+  </div>
+
+  <div class="funnel__body">
+    {/* Paso 1 — cuánto pagas */}
+    <div class="fstep" data-panel="0">
+      <p class="t-eyebrow fstep__eyebrow">Paso 1 de 4</p>
+      <h2 class="t-h2 fstep__title">¿Cuánto pagas al mes?</h2>
+      <p class="t-lede fstep__lede fstep__lede--narrow">Suma fibra y móvil. Una sola cifra.</p>
+      <form class="amount amount--center" id="funnel-amount-form">
+        <label class="amount__label" for="funnel-paid">Tu factura mensual</label>
+        <div class="amount__row">
+          <span class="amount__euro" aria-hidden="true">€</span>
+          <input
+            id="funnel-paid" class="amount__input" type="number" inputmode="numeric"
+            min="1" max="500" placeholder="42"
+          />
+          <span class="amount__unit">/ mes</span>
+        </div>
+      </form>
+      <div class="fstep__actions">
+        <Button variant="primary" size="lg" id="funnel-amount-next" disabled data-conversion-event="funnel_step_complete">
+          Continuar <Icon name="arrow" size={16} />
+        </Button>
+      </div>
+    </div>
+
+    {/* Paso 2 — compañía */}
+    <div class="fstep" data-panel="1" hidden>
+      <p class="t-eyebrow fstep__eyebrow">Paso 2 de 4</p>
+      <h2 class="t-h2 fstep__title">¿Con quién estás ahora?</h2>
+      <p class="t-lede fstep__lede fstep__lede--mid">Para descontar tu permanencia y compararte de forma justa.</p>
+      <div class="pgrid">
+        {PROVIDERS.map((p) => (
+          <button class="pchip" type="button" data-provider={p.id} data-conversion-event="funnel_provider_selected">
+            {p.name}{p.note && <small>{p.note}</small>}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Paso 3 — teléfono */}
+    <div class="fstep" data-panel="2" hidden>
+      <p class="t-eyebrow fstep__eyebrow">Paso 3 de 4</p>
+      <h2 class="t-h2 fstep__title">¿A dónde enviamos tu ahorro?</h2>
+      <p class="t-lede fstep__lede fstep__lede--wide">Solo te contactamos si tú lo pides. Sin spam, prometido.</p>
+      <form id="funnel-phone-form" class="funnel__phone">
+        <Field label="Tu móvil" hint="No lo compartimos con nadie.">
+          <input class="input" id="funnel-phone" type="tel" inputmode="numeric" placeholder="612 345 678" />
+        </Field>
+        <span class="field__msg field__msg--error funnel__phone-err" id="funnel-phone-err" hidden></span>
+        <div class="fstep__actions">
+          <Button variant="primary" size="lg" block type="submit" data-conversion-event="funnel_lead_submit">
+            Ver mis ofertas <Icon name="arrow" size={16} />
+          </Button>
+          <button type="button" class="link-arrow funnel__skip" id="funnel-skip">
+            Prefiero verlas sin dejar el móvil ›
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {/* Paso 4 — resultados */}
+    <div class="fresults" data-panel="3" hidden>
+      <div class="fresults__head">
+        <p class="t-eyebrow">Paso 4 de 4 · Resultados</p>
+        <h2 class="t-h2 fresults__title">
+          Pagando <span id="funnel-paid-echo">42</span> €, ahorras hasta {fmtSave(ranked[0].save)}
+        </h2>
+        <p class="t-body fresults__sub" id="funnel-results-sub">
+          Ordenadas por ahorro neto frente a tu factura actual.
+        </p>
+      </div>
+      {ranked.map((o, i) => (
+        <div class="frow">
+          <div class="frow__op">
+            <span class="n">{i === 0 ? '★ ' : ''}{o.op}</span>
+            <span class="s">{o.fibre} · {o.mobile} · {o.price} €/mes</span>
+          </div>
+          <div class="frow__save">
+            <div class="big tnum">−{fmtSave(o.save)}</div>
+            <div class="lab">vs. lo que pagas</div>
+          </div>
+          <Button variant={i === 0 ? 'primary' : 'secondary'} size="sm" data-conversion-event="funnel_offer_click">
+            Activar
+          </Button>
+        </div>
+      ))}
+      <div class="fstep__actions fresults__foot">
+        <button class="link-arrow" type="button" id="funnel-home">Volver a la página de inicio ›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const TOTAL = 4;
+    const funnelEl = document.getElementById('funnel');
+    if (!funnelEl) return;
+    const funnel: HTMLElement = funnelEl;
+
+    const panels = Array.from(funnel.querySelectorAll<HTMLElement>('[data-panel]'));
+    const dots = Array.from(funnel.querySelectorAll<HTMLElement>('[data-dot]'));
+    const backBtn = document.getElementById('funnel-back') as HTMLButtonElement;
+    const backLabel = funnel.querySelector<HTMLElement>('.funnel__back-label');
+    const iconClose = funnel.querySelector<HTMLElement>('.funnel__back-icon:not(.funnel__back-icon--back)');
+    const iconBack = funnel.querySelector<HTMLElement>('.funnel__back-icon--back');
+
+    const paidInput = document.getElementById('funnel-paid') as HTMLInputElement;
+    const amountNext = document.getElementById('funnel-amount-next') as HTMLButtonElement;
+    const amountForm = document.getElementById('funnel-amount-form') as HTMLFormElement;
+
+    const phoneForm = document.getElementById('funnel-phone-form') as HTMLFormElement;
+    const phoneInput = document.getElementById('funnel-phone') as HTMLInputElement;
+    const phoneErr = document.getElementById('funnel-phone-err') as HTMLElement;
+    const skipBtn = document.getElementById('funnel-skip') as HTMLButtonElement;
+
+    const paidEcho = document.getElementById('funnel-paid-echo') as HTMLElement;
+    const resultsSub = document.getElementById('funnel-results-sub') as HTMLElement;
+    const homeBtn = document.getElementById('funnel-home') as HTMLButtonElement;
+
+    let step = 0;
+    let submitted = false;
+
+    function render() {
+      panels.forEach((p) => { p.hidden = Number(p.dataset.panel) !== step; });
+      dots.forEach((d, i) => {
+        d.classList.toggle('is-active', i === step);
+        d.classList.toggle('is-done', i < step);
+      });
+      // barra: "Cerrar" en el paso 0, "Atrás" después
+      const atStart = step === 0;
+      if (backLabel) backLabel.textContent = atStart ? 'Cerrar' : 'Atrás';
+      if (iconClose) iconClose.style.display = atStart ? 'block' : 'none';
+      if (iconBack) iconBack.style.display = atStart ? 'none' : 'block';
+      if (step === 3) {
+        paidEcho.textContent = paidInput.value || '42';
+        resultsSub.textContent = submitted
+          ? 'Te contactaremos para activar la que elijas.'
+          : 'Ordenadas por ahorro neto frente a tu factura actual.';
+      }
+    }
+
+    function goTo(n: number) {
+      step = Math.max(0, Math.min(n, TOTAL - 1));
+      render();
+      funnel.querySelector('.funnel__body')?.scrollTo({ top: 0 });
+    }
+    const next = () => goTo(step + 1);
+
+    function open(detail: { paid?: string; step?: number } = {}) {
+      if (detail.paid != null) paidInput.value = String(detail.paid);
+      submitted = false;
+      funnel.hidden = false;
+      // forzar reflow para que la transición de opacidad corra
+      void funnel.offsetWidth;
+      funnel.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      goTo(detail.step ?? 0);
+      if (step === 0) setTimeout(() => paidInput.focus(), 350);
+    }
+
+    function close() {
+      funnel.classList.remove('is-open');
+      document.body.style.overflow = '';
+      const onEnd = () => { funnel.hidden = true; funnel.removeEventListener('transitionend', onEnd); };
+      funnel.addEventListener('transitionend', onEnd);
+      // red de seguridad por si no hay transición
+      setTimeout(() => { if (!funnel.classList.contains('is-open')) funnel.hidden = true; }, 500);
+    }
+
+    // ---- amount ----
+    const syncAmount = () => { amountNext.disabled = !paidInput.value; };
+    paidInput.addEventListener('input', syncAmount);
+    amountForm.addEventListener('submit', (e) => { e.preventDefault(); if (paidInput.value) next(); });
+    amountNext.addEventListener('click', () => { if (paidInput.value) next(); });
+
+    // ---- provider ----
+    funnel.querySelectorAll<HTMLButtonElement>('[data-provider]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        funnel.querySelectorAll('.pchip').forEach((c) => c.classList.remove('is-sel'));
+        chip.classList.add('is-sel');
+        setTimeout(next, 220);
+      });
+    });
+
+    // ---- phone ----
+    phoneForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const clean = phoneInput.value.replace(/\s/g, '');
+      if (!/^[6789]\d{8}$/.test(clean)) {
+        phoneErr.textContent = 'Introduce un móvil español válido (9 dígitos).';
+        phoneErr.hidden = false;
+        phoneInput.classList.add('input--error');
+        return;
+      }
+      phoneErr.hidden = true;
+      phoneInput.classList.remove('input--error');
+      submitted = true;
+      next();
+    });
+    phoneInput.addEventListener('input', () => {
+      if (!phoneErr.hidden) { phoneErr.hidden = true; phoneInput.classList.remove('input--error'); }
+    });
+    skipBtn.addEventListener('click', () => { submitted = false; next(); });
+
+    // ---- nav ----
+    backBtn.addEventListener('click', () => { if (step === 0) close(); else goTo(step - 1); });
+    homeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && funnel.classList.contains('is-open')) close();
+    });
+
+    // ---- triggers globales ----
+    document.querySelectorAll<HTMLElement>('[data-open-funnel]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const s = el.dataset.step ? Number(el.dataset.step) : 0;
+        open({ step: s, paid: el.dataset.paid });
+      });
+    });
+    window.addEventListener('funnel:open', (e) => {
+      const detail = (e as CustomEvent).detail || {};
+      open(detail);
+    });
+  })();
+</script>
+
+<style>
+  .funnel {
+    position: fixed; inset: 0; z-index: 80; background: var(--c-bg);
+    display: flex; flex-direction: column;
+    opacity: 0; transition: opacity 0.4s var(--ease-apple);
+  }
+  .funnel.is-open { opacity: 1; }
+  .funnel[hidden] { display: none; }
+
+  .funnel__bar { height: 52px; display: flex; align-items: center; justify-content: space-between; padding-inline: var(--gutter); border-bottom: 1px solid var(--c-border); }
+  .funnel__close { background: none; border: 0; cursor: pointer; color: var(--c-fg-muted); display: inline-flex; align-items: center; gap: 7px; font-size: 14px; padding: 8px; }
+  .funnel__close:hover { color: var(--c-fg); }
+  .funnel__back-icon--back { display: none; }
+  .funnel__brand { font-size: 16px; }
+
+  .funnel__progress { display: flex; gap: 7px; align-items: center; }
+  .funnel__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-border); transition: background-color 0.3s var(--ease-apple), width 0.3s var(--ease-apple); }
+  .funnel__dot.is-active { background: var(--c-fg); width: 22px; border-radius: 4px; }
+  .funnel__dot.is-done { background: var(--c-fg); }
+
+  /*
+    Centrado vertical "seguro": cuando el contenido cabe queda centrado; cuando
+    es más alto que el área (p. ej. resultados en pantallas bajas) se alinea arriba
+    y permite scroll completo, en lugar de recortar el borde superior.
+  */
+  .funnel__body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: safe center; padding: clamp(16px, 4vh, 40px) var(--gutter); }
+
+  .fstep { width: 100%; max-width: 540px; text-align: center; }
+  .fstep__eyebrow { margin-bottom: 16px; }
+  .fstep__title { margin-bottom: 14px; }
+  .fstep__lede { margin-bottom: clamp(28px, 5vw, 40px); margin-inline: auto; }
+  .fstep__lede--narrow { max-width: 26ch; }
+  .fstep__lede--mid { max-width: 28ch; }
+  .fstep__lede--wide { max-width: 30ch; }
+  .fstep__actions { margin-top: clamp(28px, 5vw, 40px); display: flex; flex-direction: column; gap: 14px; align-items: center; }
+  .amount--center { margin-inline: auto; }
+  .funnel__phone { max-width: 360px; margin-inline: auto; }
+  .funnel__phone-err { display: block; margin-top: 8px; text-align: left; }
+  .funnel__skip { color: var(--c-fg-muted); }
+
+  .pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .pchip {
+    border: 0; cursor: pointer; background: var(--c-surface); color: var(--c-fg);
+    border-radius: 14px; padding: 18px 12px; font-family: var(--font-display);
+    font-weight: 500; font-size: 16px; letter-spacing: -0.01em;
+    transition: background-color 0.2s var(--ease-apple), box-shadow 0.2s var(--ease-apple);
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .pchip small { font-weight: 400; font-size: 12px; color: var(--c-fg-muted); font-family: var(--font-body); }
+  .pchip:hover { background: color-mix(in oklch, var(--c-surface) 60%, var(--c-border)); }
+  .pchip.is-sel { background: var(--c-bg); box-shadow: inset 0 0 0 2px var(--c-fg); }
+
+  .fresults { width: 100%; max-width: 720px; text-align: left; }
+  .fresults__head { text-align: center; margin-bottom: clamp(28px, 5vw, 44px); }
+  .fresults__title { margin-top: 12px; }
+  .fresults__sub { margin-top: 14px; }
+  .fresults__foot { margin-top: 40px; }
+  .frow { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--c-border); }
+  .frow:last-of-type { border-bottom: 0; }
+  .frow__op { display: flex; flex-direction: column; gap: 4px; }
+  .frow__op .n { font-family: var(--font-display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; }
+  .frow__op .s { font-size: 14px; color: var(--c-fg-muted); }
+  .frow__save { text-align: right; }
+  .frow__save .big { font-family: var(--font-display); font-weight: 600; font-size: 26px; letter-spacing: -0.03em; color: var(--c-accent); }
+  .frow__save .lab { font-size: 12px; color: var(--c-fg-muted); }
+
+  @media (max-width: 520px) {
+    .pgrid { grid-template-columns: 1fr 1fr; }
+    .frow { grid-template-columns: 1fr auto; }
+    .frow :global(.btn) { grid-column: 1 / -1; }
+  }
+  @media (max-width: 480px) { .pgrid { grid-template-columns: 1fr 1fr; } }
+</style>

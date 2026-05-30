@@ -1,0 +1,58 @@
+---
+/*
+  Methodology.astro — dos columnas: intro (izq) + lista de puntos (der).
+  Sin cajas: jerarquía por tipografía y aire.
+*/
+import LinkArrow from '../primitives/LinkArrow.astro';
+
+const points = [
+  {
+    t: 'Ordenamos por ahorro neto, no por comisión',
+    b: 'El ranking sale de tu factura actual menos la oferta. Quien más te ahorra, sale primero. Punto.',
+  },
+  {
+    t: 'Tú no nos pagas nada',
+    b: 'El servicio es gratis para ti. Si contratas, el operador nos compensa — y eso nunca altera el orden.',
+  },
+  {
+    t: 'Datos que se revisan cada semana',
+    b: 'Precios, permanencias y promos de 87 operadores, contrastados con sus webs oficiales.',
+  },
+  {
+    t: 'Te comparamos como tu hogar, no como un folleto',
+    b: 'Descontamos lo que ya tienes: fidelidad, extras, líneas adicionales. La cifra es realista.',
+  },
+];
+---
+<section class="section" id="metodologia" aria-labelledby="method-title">
+  <div class="wrap">
+    <div class="method__grid">
+      <div class="reveal">
+        <p class="t-eyebrow">Metodología</p>
+        <h2 id="method-title" class="t-h2 method__title">Sin trucos. Y te enseñamos las cuentas.</h2>
+        <p class="t-lede method__lede">
+          Un comparador solo sirve si confías en el orden. Así es como lo construimos.
+        </p>
+        <LinkArrow href="#metodologia" class="method__link">Leer la metodología completa</LinkArrow>
+      </div>
+      <div class="method__points">
+        {points.map((p) => (
+          <div class="mpoint reveal">
+            <h3 class="t-h3 mpoint__title">{p.t}</h3>
+            <p class="t-body">{p.b}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .method__grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 6vw, 88px); align-items: start; }
+  .method__title { margin-top: 16px; }
+  .method__lede { margin-top: 24px; max-width: 30ch; }
+  .method__link { margin-top: 28px; display: inline-flex; }
+  .method__points { display: flex; flex-direction: column; gap: var(--stack-lg); }
+  .mpoint__title { margin-bottom: 8px; }
+  @media (max-width: 820px) { .method__grid { grid-template-columns: 1fr; gap: 48px; } }
+</style>

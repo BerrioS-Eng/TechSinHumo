@@ -1,0 +1,64 @@
+/*
+  tokens.css — API de diseño (light-only).
+  Pivote a minimalismo tipo Apple. Cambia aquí y el resto del sitio se adapta.
+
+  Mínimos a respetar:
+    - Contraste texto/fondo: WCAG AA (4.5:1 normal, 3:1 large).
+    - El acento aparece SOLO en links inline, focus rings y como mucho 1 CTA por viewport.
+*/
+
+:root {
+  /* ---- Color (≤5 valores + acento) ---- */
+  --c-bg: #ffffff;          /* fondo principal */
+  --c-fg: #1d1d1f;          /* texto principal (casi negro, no negro puro) */
+  --c-fg-muted: #6e6e73;    /* texto secundario / deshabilitado */
+  --c-surface: #f5f5f7;     /* única superficie alterna */
+  --c-border: #d2d2d7;      /* divisor — solo cuando es indispensable */
+
+  /* acento — parsimonia extrema. Alternativas: #0071e3 (Apple blue), #1d7d52, #1d1d1f */
+  --c-accent: #c2410c;
+  --c-accent-soft: color-mix(in oklch, var(--c-accent) 12%, transparent);
+
+  /* ---- Tipografía: system stack (0 KB, idéntico a SF Pro en macOS/iOS) ---- */
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+                  "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+               "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --tracking-display: -0.025em;
+  --tracking-body: -0.005em;
+  --leading-display: 1.06;
+  --leading-body: 1.47;
+
+  /* ---- Ritmo espacial ---- */
+  --space-section-y: clamp(64px, 11vw, 132px);
+  --gutter: clamp(20px, 5vw, 40px);
+  --stack-sm: 12px;
+  --stack-md: 24px;
+  --stack-lg: 48px;
+
+  --max-w-prose: 680px;
+  --max-w-content: 980px;
+  --max-w-wide: 1120px;
+
+  /* ---- Radios (mínimos) ---- */
+  --radius-button: 980px;   /* pill */
+  --radius-input: 12px;
+  --radius-image: 18px;
+
+  /* ---- Escala del titular ---- */
+  --h1-min: 44px;
+  --h1-fluid: 8.4vw;
+  --h1-max: 104px;
+
+  /* ---- Motion ---- */
+  --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Densidad de secciones — cambia data-density en <html> o aquí el valor */
+:root[data-density="compact"] { --space-section-y: clamp(44px, 7vw, 84px); }
+:root[data-density="airy"]    { --space-section-y: clamp(88px, 14vw, 184px); }
+
+/* Escala del titular más grande */
+:root[data-h1="xl"] { --h1-min: 52px; --h1-fluid: 10.5vw; --h1-max: 132px; }

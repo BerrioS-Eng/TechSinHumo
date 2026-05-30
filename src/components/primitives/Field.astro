@@ -1,0 +1,21 @@
+---
+/*
+  Field.astro — label + slot (input) + mensaje de ayuda/error.
+  El <input> se pasa por slot para mantener control sobre type/atributos.
+*/
+interface Props {
+  label?: string;
+  error?: string;
+  hint?: string;
+}
+const { label, error, hint } = Astro.props;
+---
+<div class="field">
+  {label && <label class="field__label">{label}</label>}
+  <slot />
+  {error
+    ? <span class="field__msg field__msg--error">{error}</span>
+    : hint
+      ? <span class="field__msg">{hint}</span>
+      : null}
+</div>

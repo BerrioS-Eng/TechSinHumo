@@ -1,0 +1,53 @@
+---
+/*
+  BaseLayout.astro — documento, <head> SEO mínimo, slot de contenido.
+  Importa los estilos globales (que a su vez importan tokens.css).
+*/
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'TechSinHumo — Paga por tu internet, no por el humo',
+  description = 'Comparador independiente de fibra y móvil en España. Dinos cuánto pagas y te enseñamos cuánto ahorras entre 87 operadores. Sin registro.',
+} = Astro.props;
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <slot />
+
+    <!-- Reveal: fade-up al entrar en viewport (respeta prefers-reduced-motion) -->
+    <script>
+      (() => {
+        const els = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduce || !('IntersectionObserver' in window)) {
+          els.forEach((el) => el.classList.add('is-in'));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                (e.target as HTMLElement).classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+        );
+        els.forEach((el) => io.observe(el));
+      })();
+    </script>
+  </body>
+</html>

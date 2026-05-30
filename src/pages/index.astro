@@ -1,0 +1,30 @@
+---
+/*
+  index.astro — página única. Ensambla la landing dentro del BaseLayout.
+  El orden replica el original React: Header · Hero · Cómo · Comparación ·
+  Metodología · Blog · CTA final · Footer + Funnel (overlay).
+*/
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/landing/Header.astro';
+import Hero from '../components/landing/Hero.astro';
+import HowItWorks from '../components/landing/HowItWorks.astro';
+import FeaturedComparison from '../components/landing/FeaturedComparison.astro';
+import Methodology from '../components/landing/Methodology.astro';
+import Blog from '../components/landing/Blog.astro';
+import FinalCTA from '../components/landing/FinalCTA.astro';
+import Footer from '../components/landing/Footer.astro';
+import Funnel from '../components/funnel/Funnel.astro';
+---
+<BaseLayout>
+  <Header />
+  <main>
+    <Hero />
+    <HowItWorks />
+    <FeaturedComparison />
+    <Methodology />
+    <Blog />
+    <FinalCTA />
+  </main>
+  <Footer />
+  <Funnel />
+</BaseLayout>

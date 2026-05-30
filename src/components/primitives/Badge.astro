@@ -1,0 +1,12 @@
+---
+/*
+  Badge.astro — etiqueta de texto. variant: default | accent | solid.
+*/
+interface Props {
+  variant?: 'default' | 'accent' | 'solid';
+}
+const { variant = 'default' } = Astro.props;
+---
+<span class={`badge${variant !== 'default' ? ' badge--' + variant : ''}`}>
+  <slot />
+</span>
