@@ -1,8 +1,8 @@
 ---
 /*
-  Funnel.astro — overlay full-screen de 4 pasos.
-  Versión Astro (sin React): el DOM de los 4 pasos se renderiza una vez y un
-  pequeño script gestiona el estado (paso actual, factura, operador, teléfono).
+  Funnel.astro — overlay full-screen de 5 pasos.
+  Versión Astro (sin React): el DOM de los pasos se renderiza una vez y un
+  pequeño script gestiona el estado (paso actual, factura, operador, servicio, teléfono).
 
   Apertura:
     - clic en cualquier [data-open-funnel] (opcional data-step="N", data-paid="X")
@@ -15,9 +15,15 @@ import Icon from '../primitives/Icon.astro';
 import Field from '../primitives/Field.astro';
 import { OFFERS, fmtSave } from '../../data/offers';
 import { PROVIDERS } from '../../data/provider';
+import { SERVICES } from '../../data/services';
 
 const ranked = [...OFFERS].sort((a, b) => b.save - a.save);
-const total = 4;
+const total = 5;
+
+// TODO(contacto): sustituir por el número real de WhatsApp del consultor (formato internacional sin +).
+const WHATSAPP_NUMBER = '34600000000';
+const WHATSAPP_MSG = 'Hola, vengo de TechSinHumo y quiero agendar la llamada con un consultor.';
+const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MSG)}`;
 ---
 <div class="funnel" id="funnel" role="dialog" aria-modal="true" aria-label="Comparativa" hidden>
   <div class="funnel__bar">
@@ -37,7 +43,7 @@ const total = 4;
   <div class="funnel__body">
     {/* Paso 1 — cuánto pagas */}
     <div class="fstep" data-panel="0">
-      <p class="t-eyebrow fstep__eyebrow">Paso 1 de 4</p>
+      <p class="t-eyebrow fstep__eyebrow">Paso 1 de 5</p>
       <h2 class="t-h2 fstep__title">¿Cuánto pagas al mes?</h2>
       <p class="t-lede fstep__lede fstep__lede--narrow">Suma fibra y móvil. Una sola cifra.</p>
       <form class="amount amount--center" id="funnel-amount-form">
@@ -60,7 +66,7 @@ const total = 4;
 
     {/* Paso 2 — compañía */}
     <div class="fstep" data-panel="1" hidden>
-      <p class="t-eyebrow fstep__eyebrow">Paso 2 de 4</p>
+      <p class="t-eyebrow fstep__eyebrow">Paso 2 de 5</p>
       <h2 class="t-h2 fstep__title">¿Con quién estás ahora?</h2>
       <p class="t-lede fstep__lede fstep__lede--mid">Para revisar y compararte de forma justa.</p>
       <div class="pgrid">
@@ -72,11 +78,25 @@ const total = 4;
       </div>
     </div>
 
-    {/* Paso 3 — teléfono */}
+    {/* Paso 3 — servicio actual */}
     <div class="fstep" data-panel="2" hidden>
-      <p class="t-eyebrow fstep__eyebrow">Paso 3 de 4</p>
+      <p class="t-eyebrow fstep__eyebrow">Paso 3 de 5</p>
+      <h2 class="t-h2 fstep__title">¿Qué servicio tienes?</h2>
+      <p class="t-lede fstep__lede fstep__lede--mid">Así buscamos lo que de verdad encaja contigo.</p>
+      <div class="sgrid">
+        {SERVICES.map((s) => (
+          <button class="schip" type="button" data-service={s.id} data-conversion-event="funnel_service_selected">
+            {s.name}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Paso 4 — teléfono */}
+    <div class="fstep" data-panel="3" hidden>
+      <p class="t-eyebrow fstep__eyebrow">Paso 4 de 5</p>
       <h2 class="t-h2 fstep__title">¿A dónde enviamos tu ahorro?</h2>
-      <p class="t-lede fstep__lede fstep__lede--wide">Solo te contactamos si tú lo pides. Sin spam, prometido.</p>
+      <p class="t-lede fstep__lede fstep__lede--wide">Solo te contactamos si tú lo pides. <br/>Sin spam, prometido.</p>
       <form id="funnel-phone-form" class="funnel__phone">
         <Field label="Tu móvil" hint="No lo compartimos con nadie.">
           <input class="input" id="funnel-phone" type="tel" inputmode="numeric" placeholder="612 345 678" />
@@ -93,10 +113,10 @@ const total = 4;
       </form>
     </div>
 
-    {/* Paso 4 — resultados */}
-    <div class="fresults" data-panel="3" hidden>
+    {/* Paso 5 — resultados */}
+    <div class="fresults" data-panel="4" hidden>
       <div class="fresults__head">
-        <p class="t-eyebrow">Paso 4 de 4 · Resultados</p>
+        <p class="t-eyebrow">Paso 5 de 5 · Resultados</p>
         <h2 class="t-h2 fresults__title">
           Pagando <span id="funnel-paid-echo">42</span> €, ahorras hasta {fmtSave(ranked[0].save)}
         </h2>
@@ -114,7 +134,7 @@ const total = 4;
             <div class="big tnum">−{fmtSave(o.save)}</div>
             <div class="lab">vs. lo que pagas</div>
           </div>
-          <Button variant={i === 0 ? 'primary' : 'secondary'} size="sm" data-conversion-event="funnel_offer_click">
+          <Button variant={i === 0 ? 'primary' : 'secondary'} size="sm" data-offer-choose={o.op} data-conversion-event="funnel_offer_click">
             Elegir
           </Button>
         </div>
@@ -123,12 +143,27 @@ const total = 4;
         <button class="link-arrow" type="button" id="funnel-home">Volver a la página de inicio ›</button>
       </div>
     </div>
+
+    {/* Final — confirmación tras elegir oferta */}
+    <div class="fstep fconfirm" data-panel="5" hidden>
+      <div class="fconfirm__badge" aria-hidden="true">
+        <Icon name="check" size={30} />
+      </div>
+      <p class="t-eyebrow fstep__eyebrow">¡Todo listo!</p>
+      <h2 class="t-h2 fstep__title">Tu consultor de servicios te llamará en los próximos 5 minutos</h2>
+      <p class="t-lede fstep__lede fstep__lede--mid">¿Prefieres agendarla por WhatsApp? Escríbenos y te atendemos cuando mejor te venga.</p>
+      <div class="fstep__actions">
+        <Button variant="primary" size="lg" href={WHATSAPP_URL} target="_blank" rel="noopener" data-conversion-event="funnel_whatsapp_click">
+          Agendar por WhatsApp <Icon name="arrow" size={16} />
+        </Button>
+        <button class="link-arrow" type="button" id="funnel-confirm-home">Volver a la página de inicio ›</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
   (() => {
-    const TOTAL = 4;
     const funnelEl = document.getElementById('funnel');
     if (!funnelEl) return;
     const funnel: HTMLElement = funnelEl;
@@ -152,6 +187,7 @@ const total = 4;
     const paidEcho = document.getElementById('funnel-paid-echo') as HTMLElement;
     const resultsSub = document.getElementById('funnel-results-sub') as HTMLElement;
     const homeBtn = document.getElementById('funnel-home') as HTMLButtonElement;
+    const confirmHomeBtn = document.getElementById('funnel-confirm-home') as HTMLButtonElement;
 
     let step = 0;
     let submitted = false;
@@ -167,7 +203,7 @@ const total = 4;
       if (backLabel) backLabel.textContent = atStart ? 'Cerrar' : 'Atrás';
       if (iconClose) iconClose.style.display = atStart ? 'block' : 'none';
       if (iconBack) iconBack.style.display = atStart ? 'none' : 'block';
-      if (step === 3) {
+      if (step === 4) {
         paidEcho.textContent = paidInput.value || '42';
         resultsSub.textContent = submitted
           ? 'Te contactaremos para activar la que elijas.'
@@ -176,7 +212,7 @@ const total = 4;
     }
 
     function goTo(n: number) {
-      step = Math.max(0, Math.min(n, TOTAL - 1));
+      step = Math.max(0, Math.min(n, panels.length - 1));
       render();
       funnel.querySelector('.funnel__body')?.scrollTo({ top: 0 });
     }
@@ -218,6 +254,20 @@ const total = 4;
       });
     });
 
+    // ---- service ----
+    funnel.querySelectorAll<HTMLButtonElement>('[data-service]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        funnel.querySelectorAll('.schip').forEach((c) => c.classList.remove('is-sel'));
+        chip.classList.add('is-sel');
+        setTimeout(next, 220);
+      });
+    });
+
+    // ---- elegir oferta → confirmación ----
+    funnel.querySelectorAll<HTMLButtonElement>('[data-offer-choose]').forEach((btn) => {
+      btn.addEventListener('click', () => goTo(5));
+    });
+
     // ---- phone ----
     phoneForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -241,6 +291,7 @@ const total = 4;
     // ---- nav ----
     backBtn.addEventListener('click', () => { if (step === 0) close(); else goTo(step - 1); });
     homeBtn.addEventListener('click', close);
+    confirmHomeBtn.addEventListener('click', close);
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && funnel.classList.contains('is-open')) close();
     });
@@ -312,6 +363,21 @@ const total = 4;
   .pchip small { font-weight: 400; font-size: 12px; color: var(--c-fg-muted); font-family: var(--font-body); }
   .pchip:hover { background: color-mix(in oklch, var(--c-surface) 60%, var(--c-border)); }
   .pchip.is-sel { background: var(--c-bg); box-shadow: inset 0 0 0 2px var(--c-fg); }
+
+  .sgrid { display: flex; flex-direction: column; gap: 12px; max-width: 380px; margin-inline: auto; }
+  .schip {
+    border: 0; cursor: pointer; background: var(--c-surface); color: var(--c-fg);
+    border-radius: 14px; padding: 20px 18px; font-family: var(--font-display);
+    font-weight: 500; font-size: 17px; letter-spacing: -0.01em; text-align: center;
+    transition: background-color 0.2s var(--ease-apple), box-shadow 0.2s var(--ease-apple);
+  }
+  .schip:hover { background: color-mix(in oklch, var(--c-surface) 60%, var(--c-border)); }
+  .schip.is-sel { background: var(--c-bg); box-shadow: inset 0 0 0 2px var(--c-fg); }
+
+  .fconfirm__badge {
+    width: 64px; height: 64px; margin: 0 auto 22px; border-radius: 50%;
+    display: grid; place-items: center; color: var(--c-bg); background: var(--c-accent);
+  }
 
   .fresults { width: 100%; max-width: 720px; text-align: left; }
   .fresults__head { text-align: center; margin-bottom: clamp(28px, 5vw, 44px); }
