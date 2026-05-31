@@ -10,32 +10,47 @@
 
   Eventos de conversión: se conservan los data-conversion-event del original.
 */
-import Button from '../primitives/Button.astro';
-import Icon from '../primitives/Icon.astro';
-import Field from '../primitives/Field.astro';
-import { OFFERS, fmtSave } from '../../data/offers';
-import { PROVIDERS } from '../../data/provider';
-import { SERVICES } from '../../data/services';
+import Button from "../primitives/Button.astro";
+import Icon from "../primitives/Icon.astro";
+import Field from "../primitives/Field.astro";
+import { OFFERS, fmtSave } from "../../data/offers";
+import { PROVIDERS } from "../../data/provider";
+import { SERVICES } from "../../data/services";
 
 const ranked = [...OFFERS].sort((a, b) => b.save - a.save);
 const total = 5;
 
 // TODO(contacto): sustituir por el número real de WhatsApp del consultor (formato internacional sin +).
-const WHATSAPP_NUMBER = '34600000000';
-const WHATSAPP_MSG = 'Hola, vengo de TechSinHumo y quiero agendar la llamada con un consultor.';
+const WHATSAPP_NUMBER = "34600000000";
+const WHATSAPP_MSG =
+  "Hola, vengo de TechSinHumo y quiero agendar la llamada con un consultor.";
 const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MSG)}`;
 ---
-<div class="funnel" id="funnel" role="dialog" aria-modal="true" aria-label="Comparativa" hidden>
+
+<div
+  class="funnel"
+  id="funnel"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Comparativa"
+  hidden
+>
   <div class="funnel__bar">
     <button class="funnel__close" id="funnel-back" type="button">
       <Icon name="close" size={16} class="funnel__back-icon" />
-      <Icon name="back" size={16} class="funnel__back-icon funnel__back-icon--back" />
+      <Icon
+        name="back"
+        size={16}
+        class="funnel__back-icon funnel__back-icon--back"
+      />
       <span class="funnel__back-label">Cerrar</span>
     </button>
     <div class="funnel__progress" aria-hidden="true">
-      {Array.from({ length: total }).map((_, i) => (
-        <span class="funnel__dot" data-dot={i}></span>
-      ))}
+      {
+        Array.from({ length: total }).map((_, i) => (
+          <span class="funnel__dot" data-dot={i} />
+        ))
+      }
     </div>
     <a class="wordmark funnel__brand" href="/">TechSinHumo</a>
   </div>
@@ -45,20 +60,34 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
     <div class="fstep" data-panel="0">
       <p class="t-eyebrow fstep__eyebrow">Paso 1 de 5</p>
       <h2 class="t-h2 fstep__title">¿Cuánto pagas al mes?</h2>
-      <p class="t-lede fstep__lede fstep__lede--narrow">Suma fibra y móvil. Una sola cifra.</p>
+      <p class="t-lede fstep__lede fstep__lede--narrow">
+        Suma fibra y móvil. Una sola cifra.
+      </p>
       <form class="amount amount--center" id="funnel-amount-form">
-        <label class="amount__label" for="funnel-paid">Tu factura mensual</label>
+        <label class="amount__label" for="funnel-paid">Tu factura mensual</label
+        >
         <div class="amount__row">
           <span class="amount__euro" aria-hidden="true">€</span>
           <input
-            id="funnel-paid" class="amount__input" type="number" inputmode="numeric"
-            min="1" max="500" placeholder="42"
+            id="funnel-paid"
+            class="amount__input"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            max="500"
+            placeholder="42"
           />
           <span class="amount__unit">/ mes</span>
         </div>
       </form>
       <div class="fstep__actions">
-        <Button variant="primary" size="lg" id="funnel-amount-next" disabled data-conversion-event="funnel_step_complete">
+        <Button
+          variant="primary"
+          size="lg"
+          id="funnel-amount-next"
+          disabled
+          data-conversion-event="funnel_step_complete"
+        >
           Continuar <Icon name="arrow" size={16} />
         </Button>
       </div>
@@ -68,13 +97,23 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
     <div class="fstep" data-panel="1" hidden>
       <p class="t-eyebrow fstep__eyebrow">Paso 2 de 5</p>
       <h2 class="t-h2 fstep__title">¿Con quién estás ahora?</h2>
-      <p class="t-lede fstep__lede fstep__lede--mid">Para revisar y compararte de forma justa.</p>
+      <p class="t-lede fstep__lede fstep__lede--mid">
+        Para revisar y compararte de forma justa.
+      </p>
       <div class="pgrid">
-        {PROVIDERS.map((p) => (
-          <button class="pchip" type="button" data-provider={p.id} data-conversion-event="funnel_provider_selected">
-            {p.name}{p.note && <small>{p.note}</small>}
-          </button>
-        ))}
+        {
+          PROVIDERS.map((p) => (
+            <button
+              class="pchip"
+              type="button"
+              data-provider={p.id}
+              data-conversion-event="funnel_provider_selected"
+            >
+              {p.name}
+              {p.note && <small>{p.note}</small>}
+            </button>
+          ))
+        }
       </div>
     </div>
 
@@ -82,13 +121,22 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
     <div class="fstep" data-panel="2" hidden>
       <p class="t-eyebrow fstep__eyebrow">Paso 3 de 5</p>
       <h2 class="t-h2 fstep__title">¿Qué servicio tienes?</h2>
-      <p class="t-lede fstep__lede fstep__lede--mid">Así buscamos lo que de verdad encaja contigo.</p>
+      <p class="t-lede fstep__lede fstep__lede--mid">
+        Así buscamos lo que de verdad encaja contigo.
+      </p>
       <div class="sgrid">
-        {SERVICES.map((s) => (
-          <button class="schip" type="button" data-service={s.id} data-conversion-event="funnel_service_selected">
-            {s.name}
-          </button>
-        ))}
+        {
+          SERVICES.map((s) => (
+            <button
+              class="schip"
+              type="button"
+              data-service={s.id}
+              data-conversion-event="funnel_service_selected"
+            >
+              {s.name}
+            </button>
+          ))
+        }
       </div>
     </div>
 
@@ -96,20 +144,48 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
     <div class="fstep" data-panel="3" hidden>
       <p class="t-eyebrow fstep__eyebrow">Paso 4 de 5</p>
       <h2 class="t-h2 fstep__title">¿A dónde enviamos tu ahorro?</h2>
-      <p class="t-lede fstep__lede fstep__lede--wide">Solo te contactamos si tú lo pides. <br/>Sin spam, prometido.</p>
+      <p class="t-lede fstep__lede fstep__lede--wide">
+        Solo te contactamos si tú lo pides. <br />Sin spam, prometido.
+      </p>
       <form id="funnel-phone-form" class="funnel__phone">
         <Field label="Tu móvil" hint="No lo compartimos con nadie.">
-          <input class="input" id="funnel-phone" type="tel" inputmode="numeric" placeholder="612 345 678" />
+          <input
+            class="input"
+            id="funnel-phone"
+            type="tel"
+            inputmode="numeric"
+            placeholder="612 345 678"
+          />
         </Field>
-        <span class="field__msg field__msg--error funnel__phone-err" id="funnel-phone-err" hidden></span>
+        <span
+          class="field__msg field__msg--error funnel__phone-err"
+          id="funnel-phone-err"
+          hidden></span>
         <div class="fstep__actions">
-          <Button variant="primary" size="lg" block type="submit" data-conversion-event="funnel_lead_submit">
+          <Button
+            variant="primary"
+            size="lg"
+            block
+            type="submit"
+            data-conversion-event="funnel_lead_submit"
+          >
             Ver mis ofertas <Icon name="arrow" size={16} />
           </Button>
-          <button type="button" class="link-arrow funnel__skip" id="funnel-skip">
+          <button
+            type="button"
+            class="link-arrow funnel__skip"
+            id="funnel-skip"
+          >
             Prefiero verlas sin dejar el móvil ›
           </button>
         </div>
+        <p class="funnel__legal">
+          Al continuar aceptas nuestra <a
+            href="/privacidad"
+            target="_blank"
+            rel="noopener">política de privacidad</a
+          >.
+        </p>
       </form>
     </div>
 
@@ -118,29 +194,45 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
       <div class="fresults__head">
         <p class="t-eyebrow">Paso 5 de 5 · Resultados</p>
         <h2 class="t-h2 fresults__title">
-          Pagando <span id="funnel-paid-echo">42</span> €, ahorras hasta {fmtSave(ranked[0].save)}
+          Pagando <span id="funnel-paid-echo">42</span> €, ahorras hasta {
+            fmtSave(ranked[0].save)
+          }
         </h2>
         <p class="t-body fresults__sub" id="funnel-results-sub">
           Ordenadas por ahorro neto frente a tu factura actual.
         </p>
       </div>
-      {ranked.map((o, i) => (
-        <div class="frow">
-          <div class="frow__op">
-            <span class="n">{i === 0 ? '★ ' : ''}{o.op}</span>
-            <span class="s">{o.fibre} · {o.mobile} · {o.price} €/mes</span>
+      {
+        ranked.map((o, i) => (
+          <div class="frow">
+            <div class="frow__op">
+              <span class="n">
+                {i === 0 ? "★ " : ""}
+                {o.op}
+              </span>
+              <span class="s">
+                {o.fibre} · {o.mobile} · {o.price} €/mes
+              </span>
+            </div>
+            <div class="frow__save">
+              <div class="big tnum">−{fmtSave(o.save)}</div>
+              <div class="lab">vs. lo que pagas</div>
+            </div>
+            <Button
+              variant={i === 0 ? "primary" : "secondary"}
+              size="sm"
+              data-offer-choose={o.op}
+              data-conversion-event="funnel_offer_click"
+            >
+              Elegir
+            </Button>
           </div>
-          <div class="frow__save">
-            <div class="big tnum">−{fmtSave(o.save)}</div>
-            <div class="lab">vs. lo que pagas</div>
-          </div>
-          <Button variant={i === 0 ? 'primary' : 'secondary'} size="sm" data-offer-choose={o.op} data-conversion-event="funnel_offer_click">
-            Elegir
-          </Button>
-        </div>
-      ))}
+        ))
+      }
       <div class="fstep__actions fresults__foot">
-        <button class="link-arrow" type="button" id="funnel-home">Volver a la página de inicio ›</button>
+        <button class="link-arrow" type="button" id="funnel-home"
+          >Volver a la página de inicio ›</button
+        >
       </div>
     </div>
 
@@ -150,13 +242,27 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
         <Icon name="check" size={30} />
       </div>
       <p class="t-eyebrow fstep__eyebrow">¡Todo listo!</p>
-      <h2 class="t-h2 fstep__title">Tu consultor de servicios te llamará en los próximos 5 minutos</h2>
-      <p class="t-lede fstep__lede fstep__lede--mid">¿Prefieres agendarla por WhatsApp? Escríbenos y te atendemos cuando mejor te venga.</p>
+      <h2 class="t-h2 fstep__title">
+        Tu consultor de servicios te llamará en los próximos 5 minutos
+      </h2>
+      <p class="t-lede fstep__lede fstep__lede--mid">
+        ¿Prefieres agendarla por WhatsApp? Escríbenos y te atendemos cuando
+        mejor te venga.
+      </p>
       <div class="fstep__actions">
-        <Button variant="primary" size="lg" href={WHATSAPP_URL} target="_blank" rel="noopener" data-conversion-event="funnel_whatsapp_click">
+        <Button
+          variant="primary"
+          size="lg"
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener"
+          data-conversion-event="funnel_whatsapp_click"
+        >
           Agendar por WhatsApp <Icon name="arrow" size={16} />
         </Button>
-        <button class="link-arrow" type="button" id="funnel-confirm-home">Volver a la página de inicio ›</button>
+        <button class="link-arrow" type="button" id="funnel-confirm-home"
+          >Volver a la página de inicio ›</button
+        >
       </div>
     </div>
   </div>
@@ -164,59 +270,117 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
 
 <script>
   (() => {
-    const funnelEl = document.getElementById('funnel');
+    const funnelEl = document.getElementById("funnel");
     if (!funnelEl) return;
     const funnel: HTMLElement = funnelEl;
 
-    const panels = Array.from(funnel.querySelectorAll<HTMLElement>('[data-panel]'));
-    const dots = Array.from(funnel.querySelectorAll<HTMLElement>('[data-dot]'));
-    const backBtn = document.getElementById('funnel-back') as HTMLButtonElement;
-    const backLabel = funnel.querySelector<HTMLElement>('.funnel__back-label');
-    const iconClose = funnel.querySelector<HTMLElement>('.funnel__back-icon:not(.funnel__back-icon--back)');
-    const iconBack = funnel.querySelector<HTMLElement>('.funnel__back-icon--back');
+    const panels = Array.from(
+      funnel.querySelectorAll<HTMLElement>("[data-panel]"),
+    );
+    const dots = Array.from(funnel.querySelectorAll<HTMLElement>("[data-dot]"));
+    const backBtn = document.getElementById("funnel-back") as HTMLButtonElement;
+    const backLabel = funnel.querySelector<HTMLElement>(".funnel__back-label");
+    const iconClose = funnel.querySelector<HTMLElement>(
+      ".funnel__back-icon:not(.funnel__back-icon--back)",
+    );
+    const iconBack = funnel.querySelector<HTMLElement>(
+      ".funnel__back-icon--back",
+    );
 
-    const paidInput = document.getElementById('funnel-paid') as HTMLInputElement;
-    const amountNext = document.getElementById('funnel-amount-next') as HTMLButtonElement;
-    const amountForm = document.getElementById('funnel-amount-form') as HTMLFormElement;
+    const paidInput = document.getElementById(
+      "funnel-paid",
+    ) as HTMLInputElement;
+    const amountNext = document.getElementById(
+      "funnel-amount-next",
+    ) as HTMLButtonElement;
+    const amountForm = document.getElementById(
+      "funnel-amount-form",
+    ) as HTMLFormElement;
 
-    const phoneForm = document.getElementById('funnel-phone-form') as HTMLFormElement;
-    const phoneInput = document.getElementById('funnel-phone') as HTMLInputElement;
-    const phoneErr = document.getElementById('funnel-phone-err') as HTMLElement;
-    const skipBtn = document.getElementById('funnel-skip') as HTMLButtonElement;
+    const phoneForm = document.getElementById(
+      "funnel-phone-form",
+    ) as HTMLFormElement;
+    const phoneInput = document.getElementById(
+      "funnel-phone",
+    ) as HTMLInputElement;
+    const phoneErr = document.getElementById("funnel-phone-err") as HTMLElement;
+    const skipBtn = document.getElementById("funnel-skip") as HTMLButtonElement;
 
-    const paidEcho = document.getElementById('funnel-paid-echo') as HTMLElement;
-    const resultsSub = document.getElementById('funnel-results-sub') as HTMLElement;
-    const homeBtn = document.getElementById('funnel-home') as HTMLButtonElement;
-    const confirmHomeBtn = document.getElementById('funnel-confirm-home') as HTMLButtonElement;
+    const paidEcho = document.getElementById("funnel-paid-echo") as HTMLElement;
+    const resultsSub = document.getElementById(
+      "funnel-results-sub",
+    ) as HTMLElement;
+    const homeBtn = document.getElementById("funnel-home") as HTMLButtonElement;
+    const confirmHomeBtn = document.getElementById(
+      "funnel-confirm-home",
+    ) as HTMLButtonElement;
 
     let step = 0;
     let submitted = false;
+    let provider = "";
+    let service = "";
+    let leadId: number | null = null;
 
     function render() {
-      panels.forEach((p) => { p.hidden = Number(p.dataset.panel) !== step; });
+      panels.forEach((p) => {
+        p.hidden = Number(p.dataset.panel) !== step;
+      });
       dots.forEach((d, i) => {
-        d.classList.toggle('is-active', i === step);
-        d.classList.toggle('is-done', i < step);
+        d.classList.toggle("is-active", i === step);
+        d.classList.toggle("is-done", i < step);
       });
       // barra: "Cerrar" en el paso 0, "Atrás" después
       const atStart = step === 0;
-      if (backLabel) backLabel.textContent = atStart ? 'Cerrar' : 'Atrás';
-      if (iconClose) iconClose.style.display = atStart ? 'block' : 'none';
-      if (iconBack) iconBack.style.display = atStart ? 'none' : 'block';
+      if (backLabel) backLabel.textContent = atStart ? "Cerrar" : "Atrás";
+      if (iconClose) iconClose.style.display = atStart ? "block" : "none";
+      if (iconBack) iconBack.style.display = atStart ? "none" : "block";
       if (step === 4) {
-        paidEcho.textContent = paidInput.value || '42';
+        paidEcho.textContent = paidInput.value || "42";
         resultsSub.textContent = submitted
-          ? 'Te contactaremos para activar la que elijas.'
-          : 'Ordenadas por ahorro neto frente a tu factura actual.';
+          ? "Te contactaremos para activar la que elijas."
+          : "Ordenadas por ahorro neto frente a tu factura actual.";
       }
     }
 
     function goTo(n: number) {
       step = Math.max(0, Math.min(n, panels.length - 1));
       render();
-      funnel.querySelector('.funnel__body')?.scrollTo({ top: 0 });
+      funnel.querySelector(".funnel__body")?.scrollTo({ top: 0 });
     }
     const next = () => goTo(step + 1);
+
+    async function sendLead(withPhone: boolean) {
+      try {
+        const res = await fetch("/api/lead.php", {
+          method: "POST",
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pago_actual: paidInput.value,
+            compania_actual: provider,
+            servicio_actual: service,
+            telefono: withPhone ? phoneInput.value.replace(/\s/g, "") : "",
+            consentimiento: 1,
+          }),
+        });
+        const data = await res.json();
+        if (data && data.ok && data.id) leadId = data.id;
+      } catch (_) {
+        /* no bloqueamos la UX si falla la red */
+      }
+    }
+
+    async function sendElegido(oferta: string) {
+      if (!leadId) return;
+      try {
+        await fetch("/api/lead-elegido.php", {
+          method: "POST",
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: leadId, servicio_elegido: oferta }),
+        });
+      } catch (_) {}
+    }
 
     function open(detail: { paid?: string; step?: number } = {}) {
       if (detail.paid != null) paidInput.value = String(detail.paid);
@@ -224,87 +388,127 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
       funnel.hidden = false;
       // forzar reflow para que la transición de opacidad corra
       void funnel.offsetWidth;
-      funnel.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
+      funnel.classList.add("is-open");
+      document.body.style.overflow = "hidden";
       goTo(detail.step ?? 0);
       if (step === 0) setTimeout(() => paidInput.focus(), 350);
     }
 
     function close() {
-      funnel.classList.remove('is-open');
-      document.body.style.overflow = '';
-      const onEnd = () => { funnel.hidden = true; funnel.removeEventListener('transitionend', onEnd); };
-      funnel.addEventListener('transitionend', onEnd);
+      funnel.classList.remove("is-open");
+      document.body.style.overflow = "";
+      const onEnd = () => {
+        funnel.hidden = true;
+        funnel.removeEventListener("transitionend", onEnd);
+      };
+      funnel.addEventListener("transitionend", onEnd);
       // red de seguridad por si no hay transición
-      setTimeout(() => { if (!funnel.classList.contains('is-open')) funnel.hidden = true; }, 500);
+      setTimeout(() => {
+        if (!funnel.classList.contains("is-open")) funnel.hidden = true;
+      }, 500);
     }
 
     // ---- amount ----
-    const syncAmount = () => { amountNext.disabled = !paidInput.value; };
-    paidInput.addEventListener('input', syncAmount);
-    amountForm.addEventListener('submit', (e) => { e.preventDefault(); if (paidInput.value) next(); });
-    amountNext.addEventListener('click', () => { if (paidInput.value) next(); });
+    const syncAmount = () => {
+      amountNext.disabled = !paidInput.value;
+    };
+    paidInput.addEventListener("input", syncAmount);
+    amountForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (paidInput.value) next();
+    });
+    amountNext.addEventListener("click", () => {
+      if (paidInput.value) next();
+    });
 
     // ---- provider ----
-    funnel.querySelectorAll<HTMLButtonElement>('[data-provider]').forEach((chip) => {
-      chip.addEventListener('click', () => {
-        funnel.querySelectorAll('.pchip').forEach((c) => c.classList.remove('is-sel'));
-        chip.classList.add('is-sel');
-        setTimeout(next, 220);
+    funnel
+      .querySelectorAll<HTMLButtonElement>("[data-provider]")
+      .forEach((chip) => {
+        chip.addEventListener("click", () => {
+          funnel
+            .querySelectorAll(".pchip")
+            .forEach((c) => c.classList.remove("is-sel"));
+          chip.classList.add("is-sel");
+          provider = chip.dataset.provider || "";
+          setTimeout(next, 220);
+        });
       });
-    });
 
     // ---- service ----
-    funnel.querySelectorAll<HTMLButtonElement>('[data-service]').forEach((chip) => {
-      chip.addEventListener('click', () => {
-        funnel.querySelectorAll('.schip').forEach((c) => c.classList.remove('is-sel'));
-        chip.classList.add('is-sel');
-        setTimeout(next, 220);
+    funnel
+      .querySelectorAll<HTMLButtonElement>("[data-service]")
+      .forEach((chip) => {
+        chip.addEventListener("click", () => {
+          funnel
+            .querySelectorAll(".schip")
+            .forEach((c) => c.classList.remove("is-sel"));
+          chip.classList.add("is-sel");
+          service = chip.dataset.service || "";
+          setTimeout(next, 220);
+        });
       });
-    });
 
     // ---- elegir oferta → confirmación ----
-    funnel.querySelectorAll<HTMLButtonElement>('[data-offer-choose]').forEach((btn) => {
-      btn.addEventListener('click', () => goTo(5));
-    });
+    funnel
+      .querySelectorAll<HTMLButtonElement>("[data-offer-choose]")
+      .forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sendElegido(btn.dataset.offerChoose || "");
+          goTo(5);
+        });
+      });
 
     // ---- phone ----
-    phoneForm.addEventListener('submit', (e) => {
+    phoneForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      const clean = phoneInput.value.replace(/\s/g, '');
+      const clean = phoneInput.value.replace(/\s/g, "");
       if (!/^[6789]\d{8}$/.test(clean)) {
-        phoneErr.textContent = 'Introduce un móvil español válido (9 dígitos).';
+        phoneErr.textContent = "Introduce un móvil español válido (9 dígitos).";
         phoneErr.hidden = false;
-        phoneInput.classList.add('input--error');
+        phoneInput.classList.add("input--error");
         return;
       }
       phoneErr.hidden = true;
-      phoneInput.classList.remove('input--error');
+      phoneInput.classList.remove("input--error");
       submitted = true;
+      sendLead(true);
       next();
     });
-    phoneInput.addEventListener('input', () => {
-      if (!phoneErr.hidden) { phoneErr.hidden = true; phoneInput.classList.remove('input--error'); }
+    phoneInput.addEventListener("input", () => {
+      if (!phoneErr.hidden) {
+        phoneErr.hidden = true;
+        phoneInput.classList.remove("input--error");
+      }
     });
-    skipBtn.addEventListener('click', () => { submitted = false; next(); });
+    skipBtn.addEventListener("click", () => {
+      submitted = false;
+      sendLead(false);
+      next();
+    });
 
     // ---- nav ----
-    backBtn.addEventListener('click', () => { if (step === 0) close(); else goTo(step - 1); });
-    homeBtn.addEventListener('click', close);
-    confirmHomeBtn.addEventListener('click', close);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && funnel.classList.contains('is-open')) close();
+    backBtn.addEventListener("click", () => {
+      if (step === 0) close();
+      else goTo(step - 1);
+    });
+    homeBtn.addEventListener("click", close);
+    confirmHomeBtn.addEventListener("click", close);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && funnel.classList.contains("is-open")) close();
     });
 
     // ---- triggers globales ----
-    document.querySelectorAll<HTMLElement>('[data-open-funnel]').forEach((el) => {
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        const s = el.dataset.step ? Number(el.dataset.step) : 0;
-        open({ step: s, paid: el.dataset.paid });
+    document
+      .querySelectorAll<HTMLElement>("[data-open-funnel]")
+      .forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          const s = el.dataset.step ? Number(el.dataset.step) : 0;
+          open({ step: s, paid: el.dataset.paid });
+        });
       });
-    });
-    window.addEventListener('funnel:open', (e) => {
+    window.addEventListener("funnel:open", (e) => {
       const detail = (e as CustomEvent).detail || {};
       open(detail);
     });
@@ -313,90 +517,304 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
 
 <style>
   .funnel {
-    position: fixed; inset: 0; z-index: 80; background: var(--c-bg);
-    display: flex; flex-direction: column;
-    opacity: 0; transition: opacity 0.4s var(--ease-apple);
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background: var(--c-bg);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-apple);
   }
-  .funnel.is-open { opacity: 1; }
-  .funnel[hidden] { display: none; }
+  .funnel.is-open {
+    opacity: 1;
+  }
+  .funnel[hidden] {
+    display: none;
+  }
 
-  .funnel__bar { height: 52px; display: flex; align-items: center; justify-content: space-between; padding-inline: var(--gutter); border-bottom: 1px solid var(--c-border); }
-  .funnel__close { background: none; border: 0; cursor: pointer; color: var(--c-fg-muted); display: inline-flex; align-items: center; gap: 7px; font-size: 14px; padding: 8px; }
-  .funnel__close:hover { color: var(--c-fg); }
-  .funnel__back-icon--back { display: none; }
-  .funnel__brand { font-size: 16px; }
+  .funnel__bar {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--gutter);
+    border-bottom: 1px solid var(--c-border);
+  }
+  .funnel__close {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--c-fg-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    padding: 8px;
+  }
+  .funnel__close:hover {
+    color: var(--c-fg);
+  }
+  .funnel__back-icon--back {
+    display: none;
+  }
+  .funnel__brand {
+    font-size: 16px;
+  }
 
-  .funnel__progress { display: flex; gap: 7px; align-items: center; }
-  .funnel__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-border); transition: background-color 0.3s var(--ease-apple), width 0.3s var(--ease-apple); }
-  .funnel__dot.is-active { background: var(--c-fg); width: 22px; border-radius: 4px; }
-  .funnel__dot.is-done { background: var(--c-fg); }
+  .funnel__progress {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+  }
+  .funnel__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--c-border);
+    transition:
+      background-color 0.3s var(--ease-apple),
+      width 0.3s var(--ease-apple);
+  }
+  .funnel__dot.is-active {
+    background: var(--c-fg);
+    width: 22px;
+    border-radius: 4px;
+  }
+  .funnel__dot.is-done {
+    background: var(--c-fg);
+  }
 
   /*
     Centrado vertical "seguro": cuando el contenido cabe queda centrado; cuando
     es más alto que el área (p. ej. resultados en pantallas bajas) se alinea arriba
     y permite scroll completo, en lugar de recortar el borde superior.
   */
-  .funnel__body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: safe center; padding: clamp(16px, 4vh, 40px) var(--gutter); }
+  .funnel__body {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: safe center;
+    padding: clamp(16px, 4vh, 40px) var(--gutter);
+  }
 
-  .fstep { width: 100%; max-width: 540px; text-align: center; }
-  .fstep__eyebrow { margin-bottom: 16px; }
-  .fstep__title { margin-bottom: 14px; }
-  .fstep__lede { margin-bottom: clamp(28px, 5vw, 40px); margin-inline: auto; }
-  .fstep__lede--narrow { max-width: 26ch; }
-  .fstep__lede--mid { max-width: 28ch; }
-  .fstep__lede--wide { max-width: 30ch; }
-  .fstep__actions { margin-top: clamp(28px, 5vw, 40px); display: flex; flex-direction: column; gap: 14px; align-items: center; }
-  .amount--center { margin-inline: auto; }
-  .amount__euro { font-size: 4em; }
-  .funnel__phone { max-width: 360px; margin-inline: auto; }
-  .funnel__phone-err { display: block; margin-top: 8px; text-align: left; }
-  .funnel__skip { color: var(--c-fg-muted); }
+  .fstep {
+    width: 100%;
+    max-width: 540px;
+    text-align: center;
+  }
+  .fstep__eyebrow {
+    margin-bottom: 16px;
+  }
+  .fstep__title {
+    margin-bottom: 14px;
+  }
+  .fstep__lede {
+    margin-bottom: clamp(28px, 5vw, 40px);
+    margin-inline: auto;
+  }
+  .fstep__lede--narrow {
+    max-width: 26ch;
+  }
+  .fstep__lede--mid {
+    max-width: 28ch;
+  }
+  .fstep__lede--wide {
+    max-width: 30ch;
+  }
+  .fstep__actions {
+    margin-top: clamp(28px, 5vw, 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+  }
+  .amount--center {
+    margin-inline: auto;
+  }
+  .amount__euro { 
+    font-size: clamp(48px, 9vw, 64px); 
+  }
+  
+  .funnel__phone {
+    max-width: 360px;
+    margin-inline: auto;
+  }
+  .funnel__phone-err {
+    display: block;
+    margin-top: 8px;
+    text-align: left;
+  }
+  .funnel__skip {
+    color: var(--c-fg-muted);
+  }
 
-  .pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .funnel__legal {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--c-fg-muted);
+  }
+
+  .funnel__legal a {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  .pgrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
   .pchip {
-    border: 0; cursor: pointer; background: var(--c-surface); color: var(--c-fg);
-    border-radius: 14px; padding: 18px 12px; font-family: var(--font-display);
-    font-weight: 500; font-size: 16px; letter-spacing: -0.01em;
-    transition: background-color 0.2s var(--ease-apple), box-shadow 0.2s var(--ease-apple);
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    border: 0;
+    cursor: pointer;
+    background: var(--c-surface);
+    color: var(--c-fg);
+    border-radius: 14px;
+    padding: 18px 12px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    transition:
+      background-color 0.2s var(--ease-apple),
+      box-shadow 0.2s var(--ease-apple);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
   }
-  .pchip small { font-weight: 400; font-size: 12px; color: var(--c-fg-muted); font-family: var(--font-body); }
-  .pchip:hover { background: color-mix(in oklch, var(--c-surface) 60%, var(--c-border)); }
-  .pchip.is-sel { background: var(--c-bg); box-shadow: inset 0 0 0 2px var(--c-fg); }
+  .pchip small {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--c-fg-muted);
+    font-family: var(--font-body);
+  }
+  .pchip:hover {
+    background: color-mix(in oklch, var(--c-surface) 60%, var(--c-border));
+  }
+  .pchip.is-sel {
+    background: var(--c-bg);
+    box-shadow: inset 0 0 0 2px var(--c-fg);
+  }
 
-  .sgrid { display: flex; flex-direction: column; gap: 12px; max-width: 380px; margin-inline: auto; }
-  .schip {
-    border: 0; cursor: pointer; background: var(--c-surface); color: var(--c-fg);
-    border-radius: 14px; padding: 20px 18px; font-family: var(--font-display);
-    font-weight: 500; font-size: 17px; letter-spacing: -0.01em; text-align: center;
-    transition: background-color 0.2s var(--ease-apple), box-shadow 0.2s var(--ease-apple);
+  .sgrid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 380px;
+    margin-inline: auto;
   }
-  .schip:hover { background: color-mix(in oklch, var(--c-surface) 60%, var(--c-border)); }
-  .schip.is-sel { background: var(--c-bg); box-shadow: inset 0 0 0 2px var(--c-fg); }
+  .schip {
+    border: 0;
+    cursor: pointer;
+    background: var(--c-surface);
+    color: var(--c-fg);
+    border-radius: 14px;
+    padding: 20px 18px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    text-align: center;
+    transition:
+      background-color 0.2s var(--ease-apple),
+      box-shadow 0.2s var(--ease-apple);
+  }
+  .schip:hover {
+    background: color-mix(in oklch, var(--c-surface) 60%, var(--c-border));
+  }
+  .schip.is-sel {
+    background: var(--c-bg);
+    box-shadow: inset 0 0 0 2px var(--c-fg);
+  }
 
   .fconfirm__badge {
-    width: 64px; height: 64px; margin: 0 auto 22px; border-radius: 50%;
-    display: grid; place-items: center; color: var(--c-bg); background: var(--c-accent);
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--c-bg);
+    background: var(--c-accent);
   }
 
-  .fresults { width: 100%; max-width: 720px; text-align: left; }
-  .fresults__head { text-align: center; margin-bottom: clamp(28px, 5vw, 44px); }
-  .fresults__title { margin-top: 12px; }
-  .fresults__sub { margin-top: 14px; }
-  .fresults__foot { margin-top: 40px; }
-  .frow { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--c-border); }
-  .frow:last-of-type { border-bottom: 0; }
-  .frow__op { display: flex; flex-direction: column; gap: 4px; }
-  .frow__op .n { font-family: var(--font-display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; }
-  .frow__op .s { font-size: 14px; color: var(--c-fg-muted); }
-  .frow__save { text-align: right; }
-  .frow__save .big { font-family: var(--font-display); font-weight: 600; font-size: 26px; letter-spacing: -0.03em; color: var(--c-accent); }
-  .frow__save .lab { font-size: 12px; color: var(--c-fg-muted); }
+  .fresults {
+    width: 100%;
+    max-width: 720px;
+    text-align: left;
+  }
+  .fresults__head {
+    text-align: center;
+    margin-bottom: clamp(28px, 5vw, 44px);
+  }
+  .fresults__title {
+    margin-top: 12px;
+  }
+  .fresults__sub {
+    margin-top: 14px;
+  }
+  .fresults__foot {
+    margin-top: 40px;
+  }
+  .frow {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .frow:last-of-type {
+    border-bottom: 0;
+  }
+  .frow__op {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .frow__op .n {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+  }
+  .frow__op .s {
+    font-size: 14px;
+    color: var(--c-fg-muted);
+  }
+  .frow__save {
+    text-align: right;
+  }
+  .frow__save .big {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 26px;
+    letter-spacing: -0.03em;
+    color: var(--c-accent);
+  }
+  .frow__save .lab {
+    font-size: 12px;
+    color: var(--c-fg-muted);
+  }
 
   @media (max-width: 520px) {
-    .pgrid { grid-template-columns: 1fr 1fr; }
-    .frow { grid-template-columns: 1fr auto; }
-    .frow :global(.btn) { grid-column: 1 / -1; }
+    .pgrid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .frow {
+      grid-template-columns: 1fr auto;
+    }
+    .frow :global(.btn) {
+      grid-column: 1 / -1;
+    }
   }
-  @media (max-width: 480px) { .pgrid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) {
+    .pgrid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
 </style>

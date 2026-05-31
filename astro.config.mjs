@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // Astro + Tailwind v4 (vía plugin de Vite). Sitio 100% estático.
 export default defineConfig({
-  site: 'https://techsinhumo.es',
+  site: 'https://techsinhumo.com',
   vite: {
     plugins: [tailwindcss()],
   },
