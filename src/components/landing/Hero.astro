@@ -1,13 +1,14 @@
 ---
-import Button from '../primitives/Button.astro';
-import Icon from '../primitives/Icon.astro';
+import Button from "../primitives/Button.astro";
+import Icon from "../primitives/Icon.astro";
 
 const stats = [
-  { n: '47',    l: 'operadores en España' },
-  { n: '149 €',  l: 'ahorro anual medio' },
-  { n: '200 K', l: 'comparativas al año' },
+  { value: 47, suffix: "", l: "operadores en España" },
+  { value: 149, suffix: " €", l: "ahorro anual medio" },
+  { value: 200, suffix: " K", l: "comparativas al año" },
 ];
 ---
+
 <section class="hero center" id="top">
   <div class="hero__ring" aria-hidden="true"></div>
   <div class="wrap wrap--content hero__inner">
@@ -16,22 +17,41 @@ const stats = [
       Paga por tu internet.<br />No por el humo.
     </h1>
     <p class="t-lede hero__lede reveal">
-      Dinos cuánto pagas hoy. Te enseñamos cuánto puedes ahorrar entre 47 operadores. Sin registro.
+      Dinos cuánto pagas hoy. Te enseñamos cuánto puedes ahorrar entre 47
+      operadores. Sin registro.
     </p>
 
     <div class="reveal">
-      <form class="amount" id="hero-amount-form" aria-label="Empieza la comparativa">
-        <label class="amount__label" for="hero-paid">¿Cuánto pagas al mes?</label>
+      <form
+        class="amount"
+        id="hero-amount-form"
+        aria-label="Empieza la comparativa"
+      >
+        <label class="amount__label" for="hero-paid"
+          >¿Cuánto pagas al mes?</label
+        >
         <div class="amount__row">
           <span class="amount__euro" aria-hidden="true">€</span>
           <input
-            id="hero-paid" name="paid" class="amount__input" type="number"
-            inputmode="numeric" min="1" max="500" placeholder="42"
+            id="hero-paid"
+            name="paid"
+            class="amount__input"
+            type="number"
+            inputmode="numeric"
+            min="1"
+            max="500"
+            placeholder="42"
             aria-label="Cuánto pagas al mes en euros"
           />
           <span class="amount__unit">/ mes</span>
         </div>
-        <Button variant="primary" block class="amount__cta" type="submit" data-conversion-event="cta_hero_click">
+        <Button
+          variant="primary"
+          block
+          class="amount__cta"
+          type="submit"
+          data-conversion-event="cta_hero_click"
+        >
           Ver mi ahorro <Icon name="arrow" size={16} />
         </Button>
       </form>
@@ -44,50 +64,167 @@ const stats = [
     </ul>
 
     <div class="stats reveal">
-      {stats.map((s) => (
-        <div class="stat">
-          <div class="stat__num tnum">{s.n}</div>
-          <div class="stat__lab">{s.l}</div>
-        </div>
-      ))}
+      {
+        stats.map((s) => (
+          <div class="stat">
+            <div class="stat__num tnum">
+              <span data-count-to={s.value}>0</span>
+              {s.suffix}
+            </div>
+            <div class="stat__lab">{s.l}</div>
+          </div>
+        ))
+      }
     </div>
   </div>
 </section>
 
 <script>
   // Enviar el formulario del hero abre el funnel ya en el paso de la compañía
-  const form = document.getElementById('hero-amount-form');
-  form?.addEventListener('submit', (e) => {
+  const form = document.getElementById("hero-amount-form");
+  form?.addEventListener("submit", (e) => {
     e.preventDefault();
-    const paid = (document.getElementById('hero-paid') as HTMLInputElement)?.value || '';
+    const paid =
+      (document.getElementById("hero-paid") as HTMLInputElement)?.value || "";
     // Si ya escribieron la cifra, saltamos el Paso 1 y entramos directo al de la compañía.
-    window.dispatchEvent(new CustomEvent('funnel:open', { detail: { paid, step: paid ? 1 : 0 } }));
+    window.dispatchEvent(
+      new CustomEvent("funnel:open", { detail: { paid, step: paid ? 1 : 0 } }),
+    );
   });
+
+  function animateCount(el: HTMLElement, target: number, duration = 1400) {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reduce) {
+      el.textContent = String(target);
+      return;
+    }
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic: rápido y frena al final
+      el.textContent = String(Math.round(target * eased));
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = String(target);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  const nums = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-count-to]"),
+  );
+  if (nums.length) {
+    if (!("IntersectionObserver" in window)) {
+      nums.forEach((el) => animateCount(el, Number(el.dataset.countTo)));
+    } else {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              animateCount(
+                e.target as HTMLElement,
+                Number((e.target as HTMLElement).dataset.countTo),
+              );
+              io.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.5 },
+      );
+      nums.forEach((el) => io.observe(el));
+    }
+  }
 </script>
 
 <style>
-  .hero { position: relative; overflow: hidden; padding-block: clamp(56px, 10vw, 120px) var(--space-section-y); }
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(56px, 10vw, 120px) var(--space-section-y);
+  }
   .hero__ring {
-    position: absolute; left: 50%; top: clamp(120px, 26vw, 300px);
-    width: min(112vw, 1180px); aspect-ratio: 1; transform: translateX(-50%);
-    border-radius: 50%; border: 1px solid var(--c-border); opacity: 0.5; pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: clamp(120px, 26vw, 300px);
+    width: min(112vw, 1180px);
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    border: 1px solid var(--c-border);
+    opacity: 0.5;
+    pointer-events: none;
     -webkit-mask-image: radial-gradient(circle, transparent 60%, #000 62%);
     mask-image: radial-gradient(circle, transparent 60%, #000 62%);
   }
-  .hero__inner { position: relative; z-index: 1; }
-  .hero__title { margin-top: 22px; }
-  .hero__lede { margin: var(--stack-md) auto 0; max-width: 38ch; }
-  .amount { margin-top: clamp(32px, 5vw, 48px); }
-  .amount__cta { margin-top: 16px; }
-  .amount__euro { font-size: clamp(48px, 9vw, 64px); }
-  .hero__trust { margin: 22px auto 0; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; font-size: 14px; color: var(--c-fg-muted); }
-  .hero__trust li { display: inline-flex; align-items: center; gap: 7px; }
-  .hero__trust :global(svg) { color: var(--c-fg); }
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+  }
+  .hero__title {
+    margin-top: 22px;
+  }
+  .hero__lede {
+    margin: var(--stack-md) auto 0;
+    max-width: 38ch;
+  }
+  .amount {
+    margin-top: clamp(32px, 5vw, 48px);
+  }
+  .amount__cta {
+    margin-top: 16px;
+  }
+  .amount__euro {
+    font-size: clamp(48px, 9vw, 64px);
+  }
+  .hero__trust {
+    margin: 22px auto 0;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: var(--c-fg-muted);
+  }
+  .hero__trust li {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .hero__trust :global(svg) {
+    color: var(--c-fg);
+  }
 
-  .stats { margin-top: clamp(56px, 9vw, 104px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-  .stat { text-align: center; }
-  .stat__num { font-family: var(--font-display); font-weight: 600; font-size: clamp(34px, 5vw, 52px); letter-spacing: -0.035em; line-height: 1; }
-  .stat__lab { margin-top: 10px; font-size: 13px; color: var(--c-fg-muted); letter-spacing: -0.005em; }
+  .stats {
+    margin-top: clamp(56px, 9vw, 104px);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat__num {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(34px, 5vw, 52px);
+    letter-spacing: -0.035em;
+    line-height: 1;
+  }
+  .stat__lab {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--c-fg-muted);
+    letter-spacing: -0.005em;
+  }
 
-  @media (max-width: 720px) { .stats { grid-template-columns: 1fr 1fr; gap: 40px 24px; } }
+  @media (max-width: 720px) {
+    .stats {
+      grid-template-columns: 1fr 1fr;
+      gap: 40px 24px;
+    }
+    .stat:first-child {
+      grid-column: 1 / -1;
+    }
+  }
 </style>
