@@ -1,0 +1,87 @@
+{
+  "$ref": "#/definitions/blog",
+  "definitions": {
+    "blog": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 90
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 160
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Permanencia",
+            "Análisis",
+            "Guía",
+            "Actualidad"
+          ]
+        },
+        "cover": {
+          "type": "string",
+          "enum": [
+            "ink",
+            "surface",
+            "accent"
+          ],
+          "default": "surface"
+        },
+        "pubDate": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "integer",
+              "format": "unix-time"
+            }
+          ]
+        },
+        "draft": {
+          "type": "boolean",
+          "default": true
+        },
+        "author": {
+          "type": "string",
+          "default": "Redacción TechSinHumo"
+        },
+        "aiAssisted": {
+          "type": "boolean",
+          "default": false
+        },
+        "reviewedBy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "readingMinutes": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "category",
+        "pubDate"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

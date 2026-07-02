@@ -1,36 +1,26 @@
 ---
 /*
-  Blog.astro — "Sin Humo". Tres posts con cover tipográfico (sin imágenes, sin sombra).
-  Los enlaces son placeholders (#blog) hasta que exista el detalle de artículo.
-*/
-import LinkArrow from '../primitives/LinkArrow.astro';
+  Blog.astro
 
-const posts = [
-  {
-    cat: 'Permanencia',
-    cover: 'ink',
-    title: 'Cómo salir de tu permanencia sin pagar de más',
-    desc: 'Lo que el operador no te cuenta cuando intentas portarte.',
-    date: '24 may 2026',
-    read: '6 min',
-  },
-  {
-    cat: 'Análisis',
-    cover: 'surface',
-    title: 'Fibra simétrica: cuándo importa y cuándo es marketing',
-    desc: '600 Mb o 1 Gb: qué necesitas de verdad en casa.',
-    date: '17 may 2026',
-    read: '5 min',
-  },
-  {
-    cat: 'Guía',
-    cover: 'accent',
-    title: 'Operadores low cost: la letra pequeña que sí vale la pena',
-    desc: 'Digi, Pepephone, Lowi. Dónde ahorras y dónde no.',
-    date: '9 may 2026',
-    read: '8 min',
-  },
-];
+  getCollection filtra los borradores en producción: un post con draft: true
+  NUNCA aparece en el build de prod. En `astro dev` sí se ven, para que la
+  revisión humana pueda previsualizar antes de aprobar.
+
+  Muestra los 3 posts publicados más recientes en la landing. El listado
+  completo vive en /blog.
+*/
+import { getCollection } from 'astro:content';
+import LinkArrow from '../primitives/LinkArrow.astro';
+import { readingMinutes } from '../../utils/reading-time';
+
+const isProd = import.meta.env.PROD;
+
+const posts = (await getCollection('blog', ({ data }) => !isProd || data.draft === false))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+
+const fmtDate = (d: Date) =>
+  new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }).format(d);
 ---
 <section class="section section--surface" id="blog" aria-labelledby="blog-title">
   <div class="wrap">
@@ -39,17 +29,19 @@ const posts = [
         <p class="t-eyebrow">Sin Humo · el blog</p>
         <h2 id="blog-title" class="t-h2 cmp__title blog__title">Para decidir con la cabeza, no con la prisa</h2>
       </div>
-      <LinkArrow href="#blog">Ver todo</LinkArrow>
+      <LinkArrow href="/blog/">Ver todo</LinkArrow>
     </div>
     <div class="blog__grid">
       {posts.map((p) => (
-        <a href="#blog" class="post reveal">
-          <div class={`post__cover post__cover--${p.cover}`}>
-            <span class="post__cover-cat">{p.cat}</span>
+        <a href={`/blog/${p.id}`} class="post reveal">
+          <div class={`post__cover post__cover--${p.data.cover}`}>
+            <span class="post__cover-cat">{p.data.category}</span>
           </div>
-          <div class="post__meta">{p.date} · {p.read} de lectura</div>
-          <h3 class="post__title">{p.title}</h3>
-          <p class="post__desc">{p.desc}</p>
+          <div class="post__meta">
+            {fmtDate(p.data.pubDate)} · {p.data.readingMinutes ?? readingMinutes(p.body)} min de lectura
+          </div>
+          <h3 class="post__title">{p.data.title}</h3>
+          <p class="post__desc">{p.data.description}</p>
         </a>
       ))}
     </div>

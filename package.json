@@ -8,11 +8,20 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check",
+    "blog:new": "tsx src/scripts/generate-post.ts"
   },
   "dependencies": {
-    "astro": "^5.7.5",
+    "@astrojs/mdx": "^4.0.0",
     "@tailwindcss/vite": "^4.1.4",
+    "astro": "^5.7.5",
     "tailwindcss": "^4.1.4"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "@astrojs/check": "^0.9.9",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
   }
 }
