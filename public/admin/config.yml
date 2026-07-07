@@ -1,0 +1,110 @@
+# Configuración de Sveltia CMS (panel /admin).
+#
+# Cada "Guardar" del panel crea un commit en la rama `build`, y ese push
+# dispara el workflow de deploy (validación → build → FTP a Nominalia).
+# El panel no tiene credenciales propias: se entra con GitHub (token personal
+# restringido a este repositorio; pasos en docs/actualizar-datos.md).
+
+backend:
+  name: github
+  repo: BerrioS-Eng/TechSinHumo
+  branch: build # rama de producción: cada commit aquí despliega
+
+# Sin campos de imagen por ahora; el esquema de configuración pide una carpeta.
+media_folder: public/uploads
+public_folder: /uploads
+
+site_url: https://techsinhumo.com
+
+collections:
+  - name: datos
+    label: Datos del comparador
+    editor:
+      preview: false
+    files:
+      - name: ofertas
+        label: Ofertas destacadas
+        file: src/data/offers.json
+        description: >-
+          Tabla «Cuatro ofertas, comparadas de verdad» de la portada y
+          resultados del funnel. Precios y ahorros en €/mes. Debe haber
+          exactamente UNA oferta marcada como recomendada.
+        fields:
+          - name: offers
+            label: Ofertas
+            label_singular: oferta
+            widget: list
+            min: 1
+            summary: '{{fields.op}} — {{fields.price}} €/mes'
+            fields:
+              - { name: op, label: Operador, widget: string }
+              - name: price
+                label: Precio (€/mes)
+                widget: number
+                value_type: float
+                min: 1
+                max: 500
+                step: 0.01
+              - name: save
+                label: Ahorro (€/mes)
+                widget: number
+                value_type: float
+                min: 0.01
+                max: 500
+                step: 0.01
+                hint: Ahorro estimado frente a la factura del usuario; se muestra como «−N €/mes».
+              - { name: fibre, label: Fibra, widget: string, hint: 'Ej.: «1 Gb sim.» o «600 Mb sim.»' }
+              - { name: mobile, label: Móvil, widget: string, hint: 'Ej.: «30 GB + ilim.» o «Ilimitado»' }
+              - { name: perm, label: Permanencia, widget: string, hint: 'Ej.: «Sin permanencia» o «12 meses»' }
+              - { name: tag, label: Etiqueta, widget: string, hint: 'Distintivo corto; visible en la recomendada y en las tarjetas móviles.' }
+              - name: rec
+                label: Recomendada
+                widget: boolean
+                default: false
+                required: false
+                hint: Exactamente una oferta debe estar marcada; la validación bloquea el despliegue si hay cero o varias.
+
+      - name: servicios
+        label: Servicios (paso 3 del funnel)
+        file: src/data/services.json
+        description: >-
+          ⚠️ Los identificadores están acoplados al backend de leads
+          (public/api/lead.php). Si añades, eliminas o renombras un id,
+          coordina con desarrollo: la validación bloqueará el despliegue
+          hasta que el PHP se actualice a la vez.
+        fields:
+          - name: services
+            label: Servicios
+            label_singular: servicio
+            widget: list
+            min: 1
+            summary: '{{fields.name}}'
+            fields:
+              - name: id
+                label: Identificador
+                widget: string
+                pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Solo minúsculas, números y guiones (ej. fibra-movil)']
+              - { name: name, label: Nombre visible, widget: string }
+
+      - name: operadores
+        label: Operadores (paso 2 del funnel)
+        file: src/data/providers.json
+        description: >-
+          ⚠️ Los identificadores están acoplados al backend de leads
+          (public/api/lead.php). Si añades, eliminas o renombras un id,
+          coordina con desarrollo: la validación bloqueará el despliegue
+          hasta que el PHP se actualice a la vez.
+        fields:
+          - name: providers
+            label: Operadores
+            label_singular: operador
+            widget: list
+            min: 1
+            summary: '{{fields.name}}'
+            fields:
+              - name: id
+                label: Identificador
+                widget: string
+                pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Solo minúsculas, números y guiones (ej. masmovil)']
+              - { name: name, label: Nombre visible, widget: string }
+              - { name: note, label: Nota (opcional), widget: string, required: false, hint: 'Texto pequeño bajo el nombre, ej. «ex-Telefónica».' }

@@ -1,0 +1,31 @@
+---
+/*
+  /admin — Sveltia CMS, panel de edición de los datos del comparador.
+
+  Página estática independiente del layout del sitio: aquí no hay contenido,
+  solo la app del CMS. El bundle sale de @sveltia/cms (npm, versión fijada)
+  en lugar de un CDN: nadie fuera del repo puede cambiar el código que corre
+  en una sesión autenticada. La configuración vive en public/admin/config.yml
+  y la autenticación es contra GitHub (ver docs/actualizar-datos.md).
+*/
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="cms-config-url" href="/admin/config.yml" type="application/yaml" />
+    <title>TechSinHumo — Panel de datos</title>
+  </head>
+  <body>
+    <script>
+      import { init } from '@sveltia/cms';
+      // el build ESM no se auto-inicializa como el de CDN: init() explícito.
+      // Sin argumentos lee la config del <link rel="cms-config-url"> del head.
+      init();
+    </script>
+  </body>
+</html>

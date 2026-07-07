@@ -10,13 +10,17 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
+    "validate:data": "tsx src/scripts/validate-data.ts",
     "blog:new": "tsx src/scripts/generate-post.ts"
   },
+  "packageManager": "pnpm@10.33.0",
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
+    "@sveltia/cms": "0.170.0",
     "@tailwindcss/vite": "^4.1.4",
     "astro": "^5.7.5",
-    "tailwindcss": "^4.1.4"
+    "tailwindcss": "^4.1.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.32.0",

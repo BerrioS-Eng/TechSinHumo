@@ -13,7 +13,7 @@
 import Button from "../primitives/Button.astro";
 import Icon from "../primitives/Icon.astro";
 import Field from "../primitives/Field.astro";
-import { OFFERS, fmtSave } from "../../data/offers";
+import { OFFERS, fmtPrice, fmtSave } from "../../data/offers";
 import { PROVIDERS } from "../../data/provider";
 import { SERVICES } from "../../data/services";
 
@@ -211,7 +211,7 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
                 {o.op}
               </span>
               <span class="s">
-                {o.fibre} · {o.mobile} · {o.price} €/mes
+                {o.fibre} · {o.mobile} · {fmtPrice(o.price)} €/mes
               </span>
             </div>
             <div class="frow__save">

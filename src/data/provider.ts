@@ -1,23 +1,17 @@
-export interface Provider {
-  id: string;
-  name: string;
-  note?: string;
-}
+/*
+  Operadores del paso 2 del funnel. El contenido vive en providers.json
+  (editable desde /admin); los ids están acoplados a public/api/lead.php —
+  `pnpm validate:data` comprueba esa correspondencia.
+*/
+import raw from './providers.json';
+import { ProvidersFileSchema, parseOrThrow, type Provider } from './schemas';
 
-// TODO(data): si en el futuro hay una API/CMS de operadores, mover aquí.
-export const PROVIDERS: ReadonlyArray<Provider> = [
-  { id: 'movistar',  name: 'Movistar', note: 'ex-Telefónica' },
-  { id: 'vodafone',  name: 'Vodafone' },
-  { id: 'orange',    name: 'Orange' },
-  { id: 'masmovil',  name: 'MásMóvil' },
-  { id: 'digi',      name: 'Digi' },
-  { id: 'o2',        name: 'O2' },
-  { id: 'yoigo',     name: 'Yoigo' },
-  { id: 'pepephone', name: 'Pepephone' },
-  { id: 'lowi',      name: 'Lowi' },
-  { id: 'simyo',     name: 'Simyo' },
-  { id: 'finetwork', name: 'Finetwork' },
-  { id: 'otra',      name: 'Otra…' },
-];
+export type { Provider };
+
+export const PROVIDERS: ReadonlyArray<Provider> = parseOrThrow(
+  ProvidersFileSchema,
+  raw,
+  'src/data/providers.json',
+).providers;
 
 export const PROVIDER_IDS: ReadonlySet<string> = new Set(PROVIDERS.map((p) => p.id));

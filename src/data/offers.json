@@ -1,14 +1,44 @@
 {
   "offers": [
     {
-      "op": "Claro",
-      "price": 20,
+      "op": "Digi",
+      "price": 21,
       "save": 12,
-      "fibre": "1",
-      "mobile": "30",
-      "perm": "6 meses",
-      "tag": "La quierp",
+      "fibre": "1 Gb sim.",
+      "mobile": "30 GB + ilim.",
+      "perm": "Sin permanencia",
+      "tag": "Mejor valor",
       "rec": true
+    },
+    {
+      "op": "Pepephone",
+      "price": 26.9,
+      "save": 6.1,
+      "fibre": "600 Mb sim.",
+      "mobile": "25 GB + ilim.",
+      "perm": "Sin permanencia",
+      "tag": "Atención humana",
+      "rec": false
+    },
+    {
+      "op": "O2",
+      "price": 30,
+      "save": 3,
+      "fibre": "1 Gb sim.",
+      "mobile": "Ilimitado",
+      "perm": "Sin permanencia",
+      "tag": "100% online",
+      "rec": false
+    },
+    {
+      "op": "Yoigo",
+      "price": 32.99,
+      "save": 0.01,
+      "fibre": "600 Mb sim.",
+      "mobile": "60 GB + ilim.",
+      "perm": "12 meses",
+      "tag": "Roaming UE",
+      "rec": false
     }
   ]
 }

@@ -1,13 +1,17 @@
-export interface Service {
-  id: string;
-  name: string;
-}
+/*
+  Servicios del paso 3 del funnel. El contenido vive en services.json
+  (editable desde /admin); los ids están acoplados a public/api/lead.php —
+  `pnpm validate:data` comprueba esa correspondencia.
+*/
+import raw from './services.json';
+import { ServicesFileSchema, parseOrThrow, type Service } from './schemas';
 
-// TODO(data): si en el futuro hay una API/CMS, mover aquí.
-export const SERVICES: ReadonlyArray<Service> = [
-  { id: 'movil',          name: 'Línea móvil' },
-  { id: 'fibra-movil',    name: 'Fibra y línea móvil' },
-  { id: 'fibra-movil-tv', name: 'Fibra, línea móvil y TV' },
-];
+export type { Service };
+
+export const SERVICES: ReadonlyArray<Service> = parseOrThrow(
+  ServicesFileSchema,
+  raw,
+  'src/data/services.json',
+).services;
 
 export const SERVICE_IDS: ReadonlySet<string> = new Set(SERVICES.map((s) => s.id));

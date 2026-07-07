@@ -11,7 +11,9 @@ if (!is_array($in)) { http_response_code(400); echo json_encode(['ok'=>false,'er
 // Honeypot anti-bot
 if (!empty($in['website'] ?? '')) { echo json_encode(['ok' => true]); exit; }
 
-// Mapas id -> valor legible (coinciden con provider.ts y services.ts)
+// Mapas id -> valor legible. Las claves deben coincidir con los ids de
+// src/data/providers.json y src/data/services.json (editables desde /admin);
+// `pnpm validate:data` comprueba la correspondencia en CI antes de desplegar.
 $COMPANIAS = [
   'movistar'=>'Movistar','vodafone'=>'Vodafone','orange'=>'Orange','masmovil'=>'MásMóvil',
   'digi'=>'Digi','o2'=>'O2','yoigo'=>'Yoigo','pepephone'=>'Pepephone','lowi'=>'Lowi',

@@ -1,0 +1,7 @@
+{
+  "services": [
+    { "id": "movil", "name": "Línea móvil" },
+    { "id": "fibra-movil", "name": "Fibra y línea móvil" },
+    { "id": "fibra-movil-tv", "name": "Fibra, línea móvil y TV" }
+  ]
+}

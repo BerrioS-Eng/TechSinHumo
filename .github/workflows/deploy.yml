@@ -2,7 +2,9 @@ name: Build & Deploy a Nominalia
 
 on:
   push:
-    branches: [ build ] 
+    branches: [ build ]
+  # disparo manual desde la pestaña Actions (redespliegue sin tocar código)
+  workflow_dispatch:
 
 concurrency:
   group: deploy-nominalia
@@ -13,13 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # la versión de pnpm sale del campo packageManager de package.json
       - uses: pnpm/action-setup@v4
-        with: { version: 9 }
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # corta el deploy con un mensaje legible si los datos editados no validan
+      - name: Validar datos editables
+        run: pnpm validate:data
       - run: pnpm build
       - name: Subir dist/ por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

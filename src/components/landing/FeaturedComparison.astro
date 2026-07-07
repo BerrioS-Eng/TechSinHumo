@@ -3,7 +3,7 @@ import Button from '../primitives/Button.astro';
 import Badge from '../primitives/Badge.astro';
 import Icon from '../primitives/Icon.astro';
 import LinkArrow from '../primitives/LinkArrow.astro';
-import { OFFERS, fmtSave } from '../../data/offers';
+import { OFFERS, fmtPrice, fmtSave } from '../../data/offers';
 ---
 <section class="section section--surface" id="operadores" aria-labelledby="feat-title">
   <div class="wrap">
@@ -37,7 +37,7 @@ import { OFFERS, fmtSave } from '../../data/offers';
               <td class="cspec">{o.mobile}</td>
               <td class="cspec">{o.perm}</td>
               <td class="num">
-                <div class="cprice tnum">{o.price}<span class="cprice__unit"> €</span></div>
+                <div class="cprice tnum">{fmtPrice(o.price)}<span class="cprice__unit"> €</span></div>
                 <div class="csave">−{fmtSave(o.save)}</div>
               </td>
               <td class="num cell-cta">
@@ -56,7 +56,7 @@ import { OFFERS, fmtSave } from '../../data/offers';
           <div class={`ccard${o.rec ? ' is-rec' : ''}`}>
             <div class="t-mono" style={o.rec ? 'color:var(--c-accent)' : ''}>{o.tag}</div>
             <div class="ccard__name">{o.op}</div>
-            <div class="ccard__price tnum">{o.price}<span class="u"> €/mes</span></div>
+            <div class="ccard__price tnum">{fmtPrice(o.price)}<span class="u"> €/mes</span></div>
             <div class="ccard__save">Ahorras {fmtSave(o.save)}</div>
             <ul class="ccard__specs">
               <li><span class="k">Fibra</span><span>{o.fibre}</span></li>
