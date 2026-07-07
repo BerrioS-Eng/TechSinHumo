@@ -1,0 +1,14 @@
+{
+  "offers": [
+    {
+      "op": "Claro",
+      "price": 20,
+      "save": 12,
+      "fibre": "1",
+      "mobile": "30",
+      "perm": "6 meses",
+      "tag": "La quierp",
+      "rec": true
+    }
+  ]
+}
