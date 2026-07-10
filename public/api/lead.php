@@ -11,17 +11,30 @@ if (!is_array($in)) { http_response_code(400); echo json_encode(['ok'=>false,'er
 // Honeypot anti-bot
 if (!empty($in['website'] ?? '')) { echo json_encode(['ok' => true]); exit; }
 
-// Mapas id -> valor legible. Las claves deben coincidir con los ids de
-// src/data/providers.json y src/data/services.json (editables desde /admin);
-// `pnpm validate:data` comprueba la correspondencia en CI antes de desplegar.
-$COMPANIAS = [
-  'movistar'=>'Movistar','vodafone'=>'Vodafone','orange'=>'Orange','masmovil'=>'MásMóvil',
-  'digi'=>'Digi','o2'=>'O2','yoigo'=>'Yoigo','pepephone'=>'Pepephone','lowi'=>'Lowi',
-  'simyo'=>'Simyo','finetwork'=>'Finetwork','otra'=>'Otra…',
-];
-$SERVICIOS = [
-  'movil'=>'Movil','fibra-movil'=>'Fibra y Movil','fibra-movil-tv'=>'Fibra, Movil y TV',
-];
+// Mapas id -> nombre legible, leídos de los MISMOS JSON que pintan el funnel
+// (public/data/*.json en el repo, desplegados como www/data/*.json). Única
+// fuente de verdad: lo que se añada desde /admin queda aceptado aquí sin
+// tocar código. Fallo cerrado: si el archivo falta o está corrupto, no se
+// aceptan leads (mejor un error visible que aceptar ids sin validar).
+function ts_cargar_mapa(string $archivo, string $claveRaiz): ?array {
+    $raw = @file_get_contents(__DIR__ . '/../data/' . $archivo);
+    if ($raw === false) return null;
+    $json = json_decode($raw, true);
+    if (!is_array($json) || !isset($json[$claveRaiz]) || !is_array($json[$claveRaiz])) return null;
+    $mapa = [];
+    foreach ($json[$claveRaiz] as $item) {
+        if (!is_array($item) || !is_string($item['id'] ?? null) || !is_string($item['name'] ?? null)) return null;
+        $mapa[$item['id']] = $item['name'];
+    }
+    return $mapa !== [] ? $mapa : null;
+}
+
+$COMPANIAS = ts_cargar_mapa('providers.json', 'providers');
+$SERVICIOS = ts_cargar_mapa('services.json', 'services');
+if ($COMPANIAS === null || $SERVICIOS === null) {
+    http_response_code(500); echo json_encode(['ok'=>false,'error'=>'config']); exit;
+}
+
 
 // --- Validación en servidor ---
 $pago    = filter_var($in['pago_actual'] ?? null, FILTER_VALIDATE_FLOAT);

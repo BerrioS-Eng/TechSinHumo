@@ -24,7 +24,7 @@ collections:
     files:
       - name: ofertas
         label: Ofertas destacadas
-        file: src/data/offers.json
+        file: public/data/offers.json
         description: >-
           Tabla «Cuatro ofertas, comparadas de verdad» de la portada y
           resultados del funnel. Precios y ahorros en €/mes. Debe haber
@@ -66,12 +66,12 @@ collections:
 
       - name: servicios
         label: Servicios (paso 3 del funnel)
-        file: src/data/services.json
+        file: public/data/services.json
         description: >-
-          ⚠️ Los identificadores están acoplados al backend de leads
-          (public/api/lead.php). Si añades, eliminas o renombras un id,
-          coordina con desarrollo: la validación bloqueará el despliegue
-          hasta que el PHP se actualice a la vez.
+          Botones de «¿Qué servicio tienes?». Puedes añadir, editar o borrar
+          libremente: el backend de leads lee este mismo archivo, todo se
+          actualiza junto al publicar. El identificador debe ser único y en
+          minúsculas-con-guiones; una vez publicado, evita renombrarlo.
         fields:
           - name: services
             label: Servicios
@@ -88,12 +88,12 @@ collections:
 
       - name: operadores
         label: Operadores (paso 2 del funnel)
-        file: src/data/providers.json
+        file: public/data/providers.json
         description: >-
-          ⚠️ Los identificadores están acoplados al backend de leads
-          (public/api/lead.php). Si añades, eliminas o renombras un id,
-          coordina con desarrollo: la validación bloqueará el despliegue
-          hasta que el PHP se actualice a la vez.
+          Botones de «¿Qué servicio tienes?». Puedes añadir, editar o borrar
+          libremente: el backend de leads lee este mismo archivo, todo se
+          actualiza junto al publicar. El identificador debe ser único y en
+          minúsculas-con-guiones; una vez publicado, evita renombrarlo.
         fields:
           - name: providers
             label: Operadores

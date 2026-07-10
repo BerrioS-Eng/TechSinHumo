@@ -20,7 +20,9 @@ Requiere Node 18.20+ / 20.3+ / 22+.
 ```
 src/
 ├─ pages/
-│  └─ index.astro            # única página: ensambla la landing
+│  ├─ index.astro            # landing
+│  ├─ blog/                  # índice y detalle del blog (content collections)
+│  └─ admin/index.astro      # panel de datos (Sveltia CMS)
 ├─ layouts/
 │  └─ BaseLayout.astro       # <html>, <head> SEO, observer de .reveal
 ├─ components/
@@ -28,15 +30,19 @@ src/
 │  ├─ landing/               # Header, Hero, HowItWorks, FeaturedComparison,
 │  │                         #   Methodology, Blog, FinalCTA, Footer
 │  └─ funnel/
-│     └─ Funnel.astro        # overlay de 4 pasos (estado en JS vanilla)
+│     └─ Funnel.astro        # overlay de 5 pasos (estado en JS vanilla)
 ├─ data/
-│  ├─ offers.ts              # ofertas + fmtSave()  (placeholder, ver TODO)
-│  └─ provider.ts            # operadores del paso 2
+│  ├─ schemas.ts             # esquemas zod: contratos de los JSON editables
+│  └─ offers.ts / services.ts / provider.ts   # validan el JSON y lo exportan
 └─ styles/
    ├─ tokens.css             # API de diseño (color, tipografía, ritmo, motion)
    └─ global.css             # reset, tipografía base, primitivos compartidos
 public/
-└─ favicon.svg
+├─ favicon.svg
+├─ data/                     # JSON editables (ofertas, servicios, operadores):
+│                            #   se importan en build y se despliegan a www/data/
+├─ admin/config.yml          # configuración del panel (colecciones, campos)
+└─ api/                      # endpoints PHP de leads (MySQL en Nominalia)
 ```
 
 Cada sección lleva sus estilos en un `<style>` *scoped*. Lo verdaderamente
@@ -71,7 +77,27 @@ analítica con un listener delegado sobre `[data-conversion-event]`.
 
 ## Datos
 
-`src/data/offers.ts` y `provider.ts` están **hardcodeados** como placeholder.
-Cuando se decida el origen (endpoint, scraping, CMS), mover `OFFERS` a una
-función `getOffers({ paid, provider })` y consumirla desde los componentes.
+## Datos
+
+Las ofertas, servicios y operadores viven en JSON dentro de `public/data/`.
+Una única fuente de verdad con dos consumidores:
+
+- **En build**, los módulos de `src/data/` los importan y validan con zod
+  (`schemas.ts`): un dato inválido **rompe el build antes de llegar a
+  producción**.
+- **En runtime**, `public/api/lead.php` lee los mismos archivos desplegados
+  (`www/data/`) para validar los leads, así que añadir un servicio u
+  operador desde el panel no requiere tocar PHP (CRUD completo).
+
+Se editan sin tocar código de dos formas (guía completa para el PM en
+[`docs/actualizar-datos.md`](docs/actualizar-datos.md)):
+
+1. **Panel `/admin`** — Sveltia CMS con formularios y validación por campo.
+   Cada guardado es un commit en `build`, que dispara el deploy por FTP.
+2. **Web de GitHub** — editar el JSON directamente y hacer commit a `build`.
+
+`pnpm validate:data` ejecuta la misma validación en local/CI.
+
+Pendiente (futuro): mover `OFFERS` a una función `getOffers({ paid, provider })`
+cuando las ofertas dependan del pago/operador declarados.
 

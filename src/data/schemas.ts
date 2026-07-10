@@ -1,5 +1,5 @@
 /*
-  schemas.ts — contratos de los datos editables (src/data/*.json).
+  schemas.ts — contratos de los datos editables (public/data/*.json).
 
   Única fuente de verdad de la validación: la usan los módulos que consumen
   los JSON en build (offers.ts, services.ts, provider.ts) y el script de CI
@@ -11,7 +11,7 @@ import { es } from 'zod/locales';
 // Mensajes de zod en español: los lee el PM en el log de GitHub Actions.
 z.config(es());
 
-/** id estable en kebab-case; acoplado a los mapas de public/api/lead.php */
+/** id estable en kebab-case; lead.php valida contra estos mismos archivos */
 const Id = z
   .string()
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'usa solo minúsculas, números y guiones (ej. "fibra-movil")');
