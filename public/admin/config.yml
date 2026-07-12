@@ -23,14 +23,6 @@ collections:
       preview: false
     files:
       - name: ofertas
-        label: Ofertas destacadas
-        file: public/data/offers.json
-        description: >-
-          Tabla «Cuatro ofertas, comparadas de verdad» de la portada y
-          resultados del funnel. Precios y ahorros en €/mes. Debe haber
-          exactamente UNA oferta marcada como recomendada.
-        fields:
-                - name: ofertas
         label: Catálogo de ofertas
         file: public/data/offers.json
         description: >-
