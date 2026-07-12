@@ -30,14 +30,32 @@ collections:
           resultados del funnel. Precios y ahorros en €/mes. Debe haber
           exactamente UNA oferta marcada como recomendada.
         fields:
+                - name: ofertas
+        label: Catálogo de ofertas
+        file: public/data/offers.json
+        description: >-
+          TODAS las ofertas, en un solo lugar. La portada muestra sola la de
+          mayor ahorro de cada servicio, y el funnel enseña las del servicio
+          que elige el usuario, ordenadas por ahorro. Precios y ahorros en
+          €/mes (la web muestra el ahorro anualizado).
+        fields:
           - name: offers
             label: Ofertas
             label_singular: oferta
             widget: list
             min: 1
-            summary: '{{fields.op}} — {{fields.price}} €/mes'
+            summary: '{{fields.op}} ({{fields.service}}) — {{fields.price}} €/mes'
             fields:
               - { name: op, label: Operador, widget: string }
+              - name: service
+                label: Servicio que cubre
+                widget: relation
+                collection: datos
+                file: servicios
+                search_fields: ['services.*.name']
+                display_fields: ['services.*.name']
+                value_field: 'services.*.id'
+                hint: La portada destaca automáticamente la oferta de mayor ahorro de cada servicio.
               - name: price
                 label: Precio (€/mes)
                 widget: number
@@ -53,24 +71,19 @@ collections:
                 max: 500
                 step: 0.01
                 hint: Ahorro estimado frente a la factura del usuario, en €/mes; en la web se muestra anualizado («Ahorras N €/año», mensual × 12).
-              - { name: fibre, label: Fibra, widget: string, hint: 'Ej.: «1 Gb sim.» o «600 Mb sim.»' }
-              - { name: mobile, label: Móvil, widget: string, hint: 'Ej.: «30 GB + ilim.» o «Ilimitado»' }
+              - { name: fibre, label: Fibra, widget: string, required: false, default: '', hint: 'Ej.: «1 Gb sim.». Déjalo vacío si la oferta no incluye fibra.' }
+              - { name: mobile, label: Móvil, widget: string, required: false, default: '', hint: 'Ej.: «30 GB + ilim.». Déjalo vacío si no incluye línea móvil.' }
+              - { name: tv, label: TV, widget: string, required: false, default: '', hint: 'Ej.: «HBO Max + 80 canales». Déjalo vacío si no incluye TV.' }
               - { name: perm, label: Permanencia, widget: string, hint: 'Ej.: «Sin permanencia» o «12 meses»' }
-              - { name: tag, label: Etiqueta, widget: string, hint: 'Distintivo corto; visible en la recomendada y en las tarjetas móviles.' }
-              - name: rec
-                label: Recomendada
-                widget: boolean
-                default: false
-                required: false
-                hint: Exactamente una oferta debe estar marcada; la validación bloquea el despliegue si hay cero o varias.
 
       - name: servicios
-        label: Servicios (paso 3 del funnel)
+        label: Servicios (paso 3 del funnel y categorías del catálogo)
         file: public/data/services.json
         description: >-
-          Botones de «¿Qué servicio tienes?». Puedes añadir, editar o borrar
-          libremente: el backend de leads lee este mismo archivo, todo se
-          actualiza junto al publicar. El identificador debe ser único y en
+          Botones de «¿Qué servicio tienes?» y, a la vez, categorías de las
+          ofertas: cada oferta del catálogo apunta a uno de estos ids, la
+          portada destaca la mejor de cada uno y el backend de leads lee este
+          mismo archivo. El identificador debe ser único y en
           minúsculas-con-guiones; una vez publicado, evita renombrarlo.
         fields:
           - name: services
@@ -90,7 +103,7 @@ collections:
         label: Operadores (paso 2 del funnel)
         file: public/data/providers.json
         description: >-
-          Botones de «¿Qué servicio tienes?». Puedes añadir, editar o borrar
+          Botones de «¿Con quién estás ahora?». Puedes añadir, editar o borrar
           libremente: el backend de leads lee este mismo archivo, todo se
           actualiza junto al publicar. El identificador debe ser único y en
           minúsculas-con-guiones; una vez publicado, evita renombrarlo.

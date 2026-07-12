@@ -8,8 +8,8 @@ Solo hace falta una cuenta de GitHub con acceso de escritura al repositorio
 
 | Archivo | Qué controla | Libertad |
 | --- | --- | --- |
-| `public/data/offers.json` | Tabla de ofertas de la portada y resultados del funnel (precios, ahorros, etiquetas) | Total: edita cuando quieras |
-| `public/data/services.json` | Botones del paso 3 del funnel («¿Qué servicio tienes?») | Total: añadir, editar y borrar |
+| `public/data/offers.json` | Catálogo completo de ofertas. La portada destaca sola la de mayor ahorro de cada servicio; el funnel enseña las del servicio elegido | Total: edita cuando quieras |
+| `public/data/services.json` | Botones del paso 3 del funnel («¿Qué servicio tienes?») y categorías del catálogo de ofertas | Total: añadir, editar y borrar |
 | `public/data/providers.json` | Botones del paso 2 del funnel («¿Con quién estás ahora?») | Total: añadir, editar y borrar |
 
 El backend que guarda los leads lee estos mismos archivos, así que un
@@ -33,7 +33,9 @@ Cada guardado dispara el workflow **Build & Deploy a Nominalia**
 - `price`: número entre 1 y 500 (€/mes). `save`: mayor que 0, hasta 500
   (se introduce en €/mes; la web lo muestra anualizado, ×12).
 - Ningún campo de texto puede quedar vacío.
-- Exactamente **una** oferta con `rec: true` (la recomendada).
+- Cada oferta apunta con `service` a un id existente de `services.json`, y
+  debe tener relleno al menos uno de `fibre`, `mobile` o `tv`.
+- Ningún campo de texto obligatorio puede quedar vacío.
 - Ids de servicios/operadores: minúsculas, números y guiones, sin duplicados.
   Siempre debe quedar al menos una oferta, un servicio y un operador.
 

@@ -8,7 +8,7 @@
     0 · Paso 1 de 3 — cuánto pagas
     1 · Paso 2 de 3 — compañía actual
     2 · Paso 3 de 3 — servicio actual
-    3 · Resultados — ofertas con ahorro anual (aún sin llamadas a la API)
+    3 · Resultados — ofertas del servicio elegido, por ahorro anual (sin API)
     4 · Contacto — aquí se crea el lead, siempre con canal_contacto:
         móvil → canal "llamada" (te llamamos en 5 min), o WhatsApp → canal
         "whatsapp" (redirección a wa.me con mensaje; sin número, nos escribe el usuario)
@@ -23,7 +23,12 @@
 import Button from "../primitives/Button.astro";
 import Icon from "../primitives/Icon.astro";
 import Field from "../primitives/Field.astro";
-import { OFFERS, fmtPrice, fmtSaveYearNum } from "../../data/offers";
+import {
+  OFFERS,
+  fmtPrice,
+  fmtSaveYearNum,
+  offerIncludes,
+} from "../../data/offers";
 import { PROVIDERS } from "../../data/provider";
 import { SERVICES } from "../../data/services";
 import { waUrl } from "../../utils/whatsapp";
@@ -151,23 +156,27 @@ const total = 3;
         <p class="t-eyebrow">Resultados</p>
         <h2 class="t-h2 fresults__title">
           Pagando <span id="funnel-paid-echo">42</span> € al mes, puedes
-          ahorrar hasta {fmtSaveYearNum(ranked[0].save)} € al año
+          ahorrar hasta <span id="funnel-save-echo">{fmtSaveYearNum(ranked[0].save)}</span> € al año
         </h2>
         <p class="t-body fresults__sub">
           Ordenadas por ahorro anual frente a tu factura actual. Elige una y te
           ayudamos a activarla.
         </p>
       </div>
-      {
-        ranked.map((o, i) => (
-          <div class="frow">
+            {
+        ranked.map((o) => (
+          <div
+            class="frow"
+            data-offer-service={o.service}
+            data-save-num={fmtSaveYearNum(o.save)}
+          >
             <div class="frow__op">
               <span class="n">
-                {i === 0 ? "★ " : ""}
+                <span class="frow__star" aria-hidden="true">★</span>
                 {o.op}
               </span>
               <span class="s">
-                {o.fibre} · {o.mobile} · {fmtPrice(o.price)} €/mes
+                {offerIncludes(o)} · {fmtPrice(o.price)} €/mes
               </span>
             </div>
             <div class="frow__save">
@@ -178,7 +187,7 @@ const total = 3;
               variant="secondary"
               size="sm"
               class="frow__cta"
-              data-offer-choose={o.op}
+              data-offer-choose={`${o.op} — ${offerIncludes(o)}`}
               data-conversion-event="funnel_offer_click"
             >
               Elegir
@@ -318,6 +327,8 @@ const total = 3;
     const waBtn = document.getElementById("funnel-wa") as HTMLAnchorElement;
 
     const paidEcho = document.getElementById("funnel-paid-echo") as HTMLElement;
+    const saveEcho = document.getElementById("funnel-save-echo") as HTMLElement;
+    const offerRows = Array.from(funnel.querySelectorAll<HTMLElement>(".frow"));
     const homeBtn = document.getElementById("funnel-home") as HTMLButtonElement;
     const confirmHomeBtn = document.getElementById(
       "funnel-confirm-home",
@@ -350,7 +361,23 @@ const total = 3;
       if (iconBack) iconBack.style.display = atStart ? "none" : "block";
       if (step === RESULTS) {
         paidEcho.textContent = paidInput.value || "42";
+        filterResults();
       }
+    }
+
+    // Muestra solo las ofertas del servicio elegido (si no hay ninguna, todas).
+    // Vienen ordenadas por ahorro: la primera visible es la mejor (★ y titular).
+    function filterResults() {
+      const matching = service
+        ? offerRows.filter((r) => r.dataset.offerService === service)
+        : offerRows;
+      const visible = matching.length ? matching : offerRows;
+      offerRows.forEach((r) => {
+        r.hidden = !visible.includes(r);
+        r.classList.remove("is-top");
+      });
+      visible[0].classList.add("is-top");
+      saveEcho.textContent = visible[0].dataset.saveNum || "";
     }
 
     function goTo(n: number) {
@@ -829,6 +856,18 @@ const total = 3;
   .frow__save .lab {
     font-size: 12px;
     color: var(--c-fg-muted);
+  }
+  /* el hidden del filtrado por servicio debe ganar al display:grid de .frow */
+  .frow[hidden] {
+    display: none;
+  }
+  /* ★ solo en la mejor oferta visible (la marca el script al filtrar) */
+  .frow__star {
+    display: none;
+    margin-right: 2px;
+  }
+  .frow.is-top .frow__star {
+    display: inline;
   }
   /* CTA "Elegir": todas grises; al pasar el ratón, negro */
   .frow :global(.frow__cta) {

@@ -2,43 +2,103 @@
   "offers": [
     {
       "op": "Digi",
+      "service": "fibra-movil",
       "price": 21,
       "save": 12,
       "fibre": "1 Gb sim.",
       "mobile": "30 GB + ilim.",
-      "perm": "Sin permanencia",
-      "tag": "Mejor valor",
-      "rec": true
+      "tv": "",
+      "perm": "Sin permanencia"
     },
     {
       "op": "Pepephone",
+      "service": "fibra-movil",
       "price": 26.9,
       "save": 6.1,
       "fibre": "600 Mb sim.",
       "mobile": "25 GB + ilim.",
-      "perm": "Sin permanencia",
-      "tag": "Atención humana",
-      "rec": false
+      "tv": "",
+      "perm": "Sin permanencia"
     },
     {
       "op": "O2",
+      "service": "fibra-movil",
       "price": 30,
       "save": 3,
       "fibre": "1 Gb sim.",
       "mobile": "Ilimitado",
-      "perm": "Sin permanencia",
-      "tag": "100% online",
-      "rec": false
+      "tv": "",
+      "perm": "Sin permanencia"
     },
     {
       "op": "Yoigo",
+      "service": "fibra-movil",
       "price": 32.99,
       "save": 0.01,
       "fibre": "600 Mb sim.",
       "mobile": "60 GB + ilim.",
-      "perm": "12 meses",
-      "tag": "Roaming UE",
-      "rec": false
+      "tv": "",
+      "perm": "12 meses"
+    },
+    {
+      "op": "Digi",
+      "service": "movil",
+      "price": 6,
+      "save": 7,
+      "fibre": "",
+      "mobile": "25 GB + ilim.",
+      "tv": "",
+      "perm": "Sin permanencia"
+    },
+    {
+      "op": "Simyo",
+      "service": "movil",
+      "price": 9.99,
+      "save": 4.5,
+      "fibre": "",
+      "mobile": "40 GB + ilim.",
+      "tv": "",
+      "perm": "Sin permanencia"
+    },
+    {
+      "op": "Lowi",
+      "service": "movil",
+      "price": 11.95,
+      "save": 3,
+      "fibre": "",
+      "mobile": "45 GB + ilim.",
+      "tv": "",
+      "perm": "Sin permanencia"
+    },
+    {
+      "op": "Vodafone",
+      "service": "fibra-movil-tv",
+      "price": 45,
+      "save": 9.5,
+      "fibre": "1 Gb sim.",
+      "mobile": "Ilimitado",
+      "tv": "HBO Max + 80 canales",
+      "perm": "12 meses"
+    },
+    {
+      "op": "Movistar",
+      "service": "fibra-movil-tv",
+      "price": 49,
+      "save": 6,
+      "fibre": "1 Gb sim.",
+      "mobile": "Ilimitado",
+      "tv": "Movistar Plus+",
+      "perm": "12 meses"
+    },
+    {
+      "op": "Orange",
+      "service": "fibra-movil-tv",
+      "price": 46.95,
+      "save": 4,
+      "fibre": "1 Gb sim.",
+      "mobile": "Ilimitado",
+      "tv": "Netflix + 60 canales",
+      "perm": "12 meses"
     }
   ]
 }

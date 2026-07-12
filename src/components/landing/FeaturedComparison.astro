@@ -1,18 +1,35 @@
 ---
+/*
+  FeaturedComparison.astro — la mejor oferta (mayor ahorro) de cada servicio,
+  calculada automáticamente desde el catálogo completo (public/data/offers.json).
+  La de mayor ahorro entre las destacadas se resalta como recomendada.
+*/
 import Button from '../primitives/Button.astro';
 import Badge from '../primitives/Badge.astro';
 import Icon from '../primitives/Icon.astro';
 import LinkArrow from '../primitives/LinkArrow.astro';
-import { OFFERS, fmtPrice, fmtSaveYear } from '../../data/offers';
+import { bestOffer, offerIncludes, fmtPrice, fmtSaveYear } from '../../data/offers';
+import { SERVICES } from '../../data/services';
+
+// Una fila por servicio (en el orden de services.json); si un servicio aún no
+// tiene ofertas en el catálogo, simplemente no aparece.
+const featured = SERVICES.flatMap((s) => {
+  const offer = bestOffer(s.id);
+  return offer ? [{ service: s, offer }] : [];
+});
+const bestIdx = featured.reduce(
+  (best, f, i) => (f.offer.save > featured[best].offer.save ? i : best),
+  0,
+);
 ---
 <section class="section section--surface" id="operadores" aria-labelledby="feat-title">
   <div class="wrap">
     <div class="cmp__head reveal">
       <div>
         <p class="t-eyebrow">Esta semana</p>
-        <h2 id="feat-title" class="t-h2 cmp__title">Tres ofertas, comparadas de verdad.</h2>
+        <h2 id="feat-title" class="t-h2 cmp__title">La mejor oferta para cada servicio</h2>
       </div>
-      <LinkArrow href="#operadores" data-open-funnel>Ver las demás</LinkArrow>
+      <LinkArrow href="#operadores" data-open-funnel>Ver las 87</LinkArrow>
     </div>
 
     <div class="reveal">
@@ -20,28 +37,28 @@ import { OFFERS, fmtPrice, fmtSaveYear } from '../../data/offers';
       <table class="ctable">
         <thead>
           <tr>
-            <th>Operador</th><th>Fibra</th><th>Móvil</th><th>Permanencia</th>
+            <th>Servicio</th><th>Operador</th><th>Qué incluye</th><th>Permanencia</th>
             <th class="num">Precio</th><th class="num"><span class="sr-only">Acción</span></th>
           </tr>
         </thead>
         <tbody>
-          {OFFERS.map((o) => (
-            <tr class={o.rec ? 'is-rec' : ''}>
+          {featured.map(({ service, offer }, i) => (
+            <tr class={i === bestIdx ? 'is-rec' : ''}>
+              <td class="cserv">{service.name}</td>
               <td>
                 <div class="cop">
-                  <span class="cop__name">{o.op}</span>
-                  {o.rec && <Badge variant="accent">{o.tag}</Badge>}
+                  <span class="cop__name">{offer.op}</span>
+                  {i === bestIdx && <Badge variant="accent">Mejor ahorro</Badge>}
                 </div>
               </td>
-              <td class="cspec">{o.fibre}</td>
-              <td class="cspec">{o.mobile}</td>
-              <td class="cspec">{o.perm}</td>
+              <td class="cspec">{offerIncludes(offer)}</td>
+              <td class="cspec">{offer.perm}</td>
               <td class="num">
-                <div class="cprice tnum">{fmtPrice(o.price)}<span class="cprice__unit"> €</span></div>
-                <div class="csave">Ahorras {fmtSaveYear(o.save)}</div>
+                <div class="cprice tnum">{fmtPrice(offer.price)}<span class="cprice__unit"> €</span></div>
+                <div class="csave">Ahorras {fmtSaveYear(offer.save)}</div>
               </td>
               <td class="num cell-cta">
-                <Button variant={o.rec ? 'primary' : 'ghost'} size="sm" data-open-funnel data-step="2" data-conversion-event="funnel_offer_click">
+                <Button variant={i === bestIdx ? 'primary' : 'ghost'} size="sm" data-open-funnel data-step="2" data-conversion-event="funnel_offer_click">
                   Quiero esta <Icon name="arrow" size={14} />
                 </Button>
               </td>
@@ -52,18 +69,17 @@ import { OFFERS, fmtPrice, fmtSaveYear } from '../../data/offers';
 
       <!-- Tarjetas-aire (fallback móvil): mismo contenido, sin borde ni sombra -->
       <div class="ccards">
-        {OFFERS.map((o) => (
-          <div class={`ccard${o.rec ? ' is-rec' : ''}`}>
-            <div class="t-mono" style={o.rec ? 'color:var(--c-accent)' : ''}>{o.tag}</div>
-            <div class="ccard__name">{o.op}</div>
-            <div class="ccard__price tnum">{fmtPrice(o.price)}<span class="u"> €/mes</span></div>
-            <div class="ccard__save">Ahorras {fmtSaveYear(o.save)}</div>
+        {featured.map(({ service, offer }, i) => (
+          <div class={`ccard${i === bestIdx ? ' is-rec' : ''}`}>
+            <div class="t-mono" style={i === bestIdx ? 'color:var(--c-accent)' : ''}>{service.name}</div>
+            <div class="ccard__name">{offer.op}</div>
+            <div class="ccard__price tnum">{fmtPrice(offer.price)}<span class="u"> €/mes</span></div>
+            <div class="ccard__save">Ahorras {fmtSaveYear(offer.save)}</div>
             <ul class="ccard__specs">
-              <li><span class="k">Fibra</span><span>{o.fibre}</span></li>
-              <li><span class="k">Móvil</span><span>{o.mobile}</span></li>
-              <li><span class="k">Perm.</span><span>{o.perm}</span></li>
+              <li><span class="k">Incluye</span><span>{offerIncludes(offer)}</span></li>
+              <li><span class="k">Perm.</span><span>{offer.perm}</span></li>
             </ul>
-            <Button variant={o.rec ? 'primary' : 'secondary'} size="sm" class="ccard__cta" data-open-funnel data-step="2" data-conversion-event="funnel_offer_click">
+            <Button variant={i === bestIdx ? 'primary' : 'secondary'} size="sm" class="ccard__cta" data-open-funnel data-step="2" data-conversion-event="funnel_offer_click">
               Quiero esta <Icon name="arrow" size={14} />
             </Button>
           </div>
@@ -90,6 +106,7 @@ import { OFFERS, fmtPrice, fmtSaveYear } from '../../data/offers';
   .ctable tbody tr.is-rec td { background: var(--c-bg); }
   .ctable tbody tr.is-rec td:first-child { border-top-left-radius: 14px; border-bottom-left-radius: 14px; }
   .ctable tbody tr.is-rec td:last-child { border-top-right-radius: 14px; border-bottom-right-radius: 14px; }
+  .cserv { font-size: 14px; color: var(--c-fg-muted); }
   .cop { display: flex; align-items: center; gap: 12px; }
   .cop__name { font-family: var(--font-display); font-weight: 600; font-size: 21px; letter-spacing: -0.02em; }
   .cspec { font-size: 16px; color: var(--c-fg); }
@@ -108,7 +125,7 @@ import { OFFERS, fmtPrice, fmtSaveYear } from '../../data/offers';
   .ccard__save { font-size: 14px; color: var(--c-accent); }
   .ccard__specs { margin-top: 16px; display: flex; flex-direction: column; gap: 7px; font-size: 15px; }
   .ccard__specs li { display: flex; gap: 10px; }
-  .ccard__specs .k { color: var(--c-fg-muted); min-width: 34px; }
+  .ccard__specs .k { color: var(--c-fg-muted); min-width: 54px; }
   .ccard__cta { margin-top: 22px; }
 
   @media (max-width: 860px) {

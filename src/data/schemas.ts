@@ -18,33 +18,27 @@ const Id = z
 
 const NonEmpty = z.string().trim().min(1);
 
-export const OfferSchema = z.strictObject({
-  /** nombre comercial del operador, tal como se muestra */
-  op: NonEmpty,
-  /** precio mensual en € (número; el formato es-ES se aplica al renderizar) */
-  price: z.number().min(1).max(500),
-  /** ahorro estimado en €/mes frente a la factura del usuario */
-  save: z.number().gt(0).max(500),
-  fibre: NonEmpty,
-  mobile: NonEmpty,
-  perm: NonEmpty,
-  tag: NonEmpty,
-  /** marca la oferta recomendada (exactamente 1 por lista) */
-  rec: z.boolean().default(false),
-});
-
-export const OffersFileSchema = z
-  .strictObject({ offers: z.array(OfferSchema).min(1) })
-  .superRefine((data, ctx) => {
-    const recs = data.offers.filter((o) => o.rec).length;
-    if (recs !== 1) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['offers'],
-        message: `debe haber exactamente UNA oferta recomendada ("rec": true) y hay ${recs}`,
-      });
-    }
+export const OfferSchema = z
+  .strictObject({
+    /** nombre comercial del operador, tal como se muestra */
+    op: NonEmpty,
+    /** id del servicio que cubre la oferta (debe existir en services.json) */
+    service: Id,
+    /** precio mensual en € (número; el formato es-ES se aplica al renderizar) */
+    price: z.number().min(1).max(500),
+    /** ahorro estimado en €/mes frente a la factura del usuario */
+    save: z.number().gt(0).max(500),
+    /** componentes incluidos; deja vacío el que no aplique a la oferta */
+    fibre: z.string().trim().default(''),
+    mobile: z.string().trim().default(''),
+    tv: z.string().trim().default(''),
+    perm: NonEmpty,
+  })
+  .refine((o) => o.fibre !== '' || o.mobile !== '' || o.tv !== '', {
+    message: 'la oferta debe incluir al menos uno de: fibra, móvil o TV',
   });
+
+export const OffersFileSchema = z.strictObject({ offers: z.array(OfferSchema).min(1) });
 
 export const ServiceSchema = z.strictObject({ id: Id, name: NonEmpty });
 export const ProviderSchema = z.strictObject({ id: Id, name: NonEmpty, note: z.string().optional() });
