@@ -30,7 +30,8 @@ Cada guardado dispara el workflow **Build & Deploy a Nominalia**
 
 ## Reglas que comprueba la validación
 
-- `price`: número entre 1 y 500 (€/mes). `save`: mayor que 0, hasta 500.
+- `price`: número entre 1 y 500 (€/mes). `save`: mayor que 0, hasta 500
+  (se introduce en €/mes; la web lo muestra anualizado, ×12).
 - Ningún campo de texto puede quedar vacío.
 - Exactamente **una** oferta con `rec: true` (la recomendada).
 - Ids de servicios/operadores: minúsculas, números y guiones, sin duplicados.

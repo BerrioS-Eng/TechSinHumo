@@ -3,16 +3,16 @@ import Button from '../primitives/Button.astro';
 import Badge from '../primitives/Badge.astro';
 import Icon from '../primitives/Icon.astro';
 import LinkArrow from '../primitives/LinkArrow.astro';
-import { OFFERS, fmtPrice, fmtSave } from '../../data/offers';
+import { OFFERS, fmtPrice, fmtSaveYear } from '../../data/offers';
 ---
 <section class="section section--surface" id="operadores" aria-labelledby="feat-title">
   <div class="wrap">
     <div class="cmp__head reveal">
       <div>
-        <p class="t-eyebrow">Esta semana · Fibra 600 Mb</p>
-        <h2 id="feat-title" class="t-h2 cmp__title">Cuatro ofertas, comparadas de verdad</h2>
+        <p class="t-eyebrow">Esta semana</p>
+        <h2 id="feat-title" class="t-h2 cmp__title">Tres ofertas, comparadas de verdad.</h2>
       </div>
-      <LinkArrow href="#operadores" data-open-funnel>Ver las 87</LinkArrow>
+      <LinkArrow href="#operadores" data-open-funnel>Ver las demás</LinkArrow>
     </div>
 
     <div class="reveal">
@@ -38,7 +38,7 @@ import { OFFERS, fmtPrice, fmtSave } from '../../data/offers';
               <td class="cspec">{o.perm}</td>
               <td class="num">
                 <div class="cprice tnum">{fmtPrice(o.price)}<span class="cprice__unit"> €</span></div>
-                <div class="csave">−{fmtSave(o.save)}</div>
+                <div class="csave">Ahorras {fmtSaveYear(o.save)}</div>
               </td>
               <td class="num cell-cta">
                 <Button variant={o.rec ? 'primary' : 'ghost'} size="sm" data-open-funnel data-step="2" data-conversion-event="funnel_offer_click">
@@ -57,7 +57,7 @@ import { OFFERS, fmtPrice, fmtSave } from '../../data/offers';
             <div class="t-mono" style={o.rec ? 'color:var(--c-accent)' : ''}>{o.tag}</div>
             <div class="ccard__name">{o.op}</div>
             <div class="ccard__price tnum">{fmtPrice(o.price)}<span class="u"> €/mes</span></div>
-            <div class="ccard__save">Ahorras {fmtSave(o.save)}</div>
+            <div class="ccard__save">Ahorras {fmtSaveYear(o.save)}</div>
             <ul class="ccard__specs">
               <li><span class="k">Fibra</span><span>{o.fibre}</span></li>
               <li><span class="k">Móvil</span><span>{o.mobile}</span></li>

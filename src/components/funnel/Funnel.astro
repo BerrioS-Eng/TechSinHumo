@@ -1,8 +1,18 @@
 ---
 /*
-  Funnel.astro — overlay full-screen de 5 pasos.
+  Funnel.astro — overlay full-screen 3 pasos + resultados + contacto.
   Versión Astro (sin React): el DOM de los pasos se renderiza una vez y un
   pequeño script gestiona el estado (paso actual, factura, operador, servicio, teléfono).
+
+  Estructura:
+    0 · Paso 1 de 3 — cuánto pagas
+    1 · Paso 2 de 3 — compañía actual
+    2 · Paso 3 de 3 — servicio actual
+    3 · Resultados — ofertas con ahorro anual (aún sin llamadas a la API)
+    4 · Contacto — aquí se crea el lead, siempre con canal_contacto:
+        móvil → canal "llamada" (te llamamos en 5 min), o WhatsApp → canal
+        "whatsapp" (redirección a wa.me con mensaje; sin número, nos escribe el usuario)
+    5 · Confirmación — solo tras dejar el móvil
 
   Apertura:
     - clic en cualquier [data-open-funnel] (opcional data-step="N", data-paid="X")
@@ -13,18 +23,13 @@
 import Button from "../primitives/Button.astro";
 import Icon from "../primitives/Icon.astro";
 import Field from "../primitives/Field.astro";
-import { OFFERS, fmtPrice, fmtSave } from "../../data/offers";
+import { OFFERS, fmtPrice, fmtSaveYearNum } from "../../data/offers";
 import { PROVIDERS } from "../../data/provider";
 import { SERVICES } from "../../data/services";
+import { waUrl } from "../../utils/whatsapp";
 
 const ranked = [...OFFERS].sort((a, b) => b.save - a.save);
-const total = 5;
-
-// TODO(contacto): sustituir por el número real de WhatsApp del consultor (formato internacional sin +).
-const WHATSAPP_NUMBER = "34600000000";
-const WHATSAPP_MSG =
-  "Hola, vengo de TechSinHumo y quiero agendar la llamada con un consultor.";
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MSG)}`;
+const total = 3;
 ---
 
 <div
@@ -58,7 +63,7 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
   <div class="funnel__body">
     {/* Paso 1 — cuánto pagas */}
     <div class="fstep" data-panel="0">
-      <p class="t-eyebrow fstep__eyebrow">Paso 1 de 5</p>
+      <p class="t-eyebrow fstep__eyebrow">Paso 1 de 3</p>
       <h2 class="t-h2 fstep__title">¿Cuánto pagas al mes?</h2>
       <p class="t-lede fstep__lede fstep__lede--narrow">
         Suma fibra y móvil. Una sola cifra.
@@ -95,7 +100,7 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
 
     {/* Paso 2 — compañía */}
     <div class="fstep" data-panel="1" hidden>
-      <p class="t-eyebrow fstep__eyebrow">Paso 2 de 5</p>
+      <p class="t-eyebrow fstep__eyebrow">Paso 2 de 3</p>
       <h2 class="t-h2 fstep__title">¿Con quién estás ahora?</h2>
       <p class="t-lede fstep__lede fstep__lede--mid">
         Para revisar y compararte de forma justa.
@@ -119,7 +124,7 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
 
     {/* Paso 3 — servicio actual */}
     <div class="fstep" data-panel="2" hidden>
-      <p class="t-eyebrow fstep__eyebrow">Paso 3 de 5</p>
+      <p class="t-eyebrow fstep__eyebrow">Paso 3 de 3</p>
       <h2 class="t-h2 fstep__title">¿Qué servicio tienes?</h2>
       <p class="t-lede fstep__lede fstep__lede--mid">
         Así buscamos lo que de verdad encaja contigo.
@@ -140,66 +145,17 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
       </div>
     </div>
 
-    {/* Paso 4 — teléfono */}
-    <div class="fstep" data-panel="3" hidden>
-      <p class="t-eyebrow fstep__eyebrow">Paso 4 de 5</p>
-      <h2 class="t-h2 fstep__title">¿A dónde enviamos tu ahorro?</h2>
-      <p class="t-lede fstep__lede fstep__lede--wide">
-        Solo te contactamos si tú lo pides. <br />Sin spam, prometido.
-      </p>
-      <form id="funnel-phone-form" class="funnel__phone">
-        <Field label="Tu móvil" hint="No lo compartimos con nadie.">
-          <input
-            class="input"
-            id="funnel-phone"
-            type="tel"
-            inputmode="numeric"
-            placeholder="612 345 678"
-          />
-        </Field>
-        <span
-          class="field__msg field__msg--error funnel__phone-err"
-          id="funnel-phone-err"
-          hidden></span>
-        <div class="fstep__actions">
-          <Button
-            variant="primary"
-            size="lg"
-            block
-            type="submit"
-            data-conversion-event="funnel_lead_submit"
-          >
-            Ver mis ofertas <Icon name="arrow" size={16} />
-          </Button>
-          <button
-            type="button"
-            class="link-arrow funnel__skip"
-            id="funnel-skip"
-          >
-            Prefiero verlas sin dejar el móvil ›
-          </button>
-        </div>
-        <p class="funnel__legal">
-          Al continuar aceptas nuestra <a
-            href="/privacidad"
-            target="_blank"
-            rel="noopener">política de privacidad</a
-          >.
-        </p>
-      </form>
-    </div>
-
-    {/* Paso 5 — resultados */}
-    <div class="fresults" data-panel="4" hidden>
+    {/* Resultados — sin numerar: los "tres pasos" ya están completados */}
+    <div class="fresults" data-panel="3" hidden>
       <div class="fresults__head">
-        <p class="t-eyebrow">Paso 5 de 5 · Resultados</p>
+        <p class="t-eyebrow">Resultados</p>
         <h2 class="t-h2 fresults__title">
-          Pagando <span id="funnel-paid-echo">42</span> €, ahorras hasta {
-            fmtSave(ranked[0].save)
-          }
+          Pagando <span id="funnel-paid-echo">42</span> € al mes, puedes
+          ahorrar hasta {fmtSaveYearNum(ranked[0].save)} € al año
         </h2>
-        <p class="t-body fresults__sub" id="funnel-results-sub">
-          Ordenadas por ahorro neto frente a tu factura actual.
+        <p class="t-body fresults__sub">
+          Ordenadas por ahorro anual frente a tu factura actual. Elige una y te
+          ayudamos a activarla.
         </p>
       </div>
       {
@@ -215,12 +171,13 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
               </span>
             </div>
             <div class="frow__save">
-              <div class="big tnum">−{fmtSave(o.save)}</div>
-              <div class="lab">vs. lo que pagas</div>
+              <div class="big tnum">{fmtSaveYearNum(o.save)} €</div>
+              <div class="lab">de ahorro al año</div>
             </div>
             <Button
-              variant={i === 0 ? "primary" : "secondary"}
+              variant="secondary"
               size="sm"
+              class="frow__cta"
               data-offer-choose={o.op}
               data-conversion-event="funnel_offer_click"
             >
@@ -236,30 +193,79 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
       </div>
     </div>
 
-    {/* Final — confirmación tras elegir oferta */}
+    {/* Contacto — tras elegir oferta: móvil o WhatsApp */}
+    <div class="fstep fcontact" data-panel="4" hidden>
+      <p class="t-eyebrow fstep__eyebrow">Buena elección</p>
+      <h2 class="t-h2 fstep__title">¿Te llamamos y la activamos?</h2>
+      <p class="t-lede fstep__lede fstep__lede--wide">
+        Déjanos tu móvil y un consultor te llama gratis. <br />Sin spam,
+        prometido.
+      </p>
+      <div class="funnel__phone">
+        <form id="funnel-phone-form">
+          <Field label="Tu móvil" hint="No lo compartimos con nadie.">
+            <input
+              class="input"
+              id="funnel-phone"
+              type="tel"
+              inputmode="numeric"
+              placeholder="612 345 678"
+            />
+          </Field>
+          <span
+            class="field__msg field__msg--error funnel__phone-err"
+            id="funnel-phone-err"
+            hidden></span>
+          <Button
+            variant="primary"
+            size="lg"
+            block
+            type="submit"
+            class="fcontact__cta"
+            data-conversion-event="funnel_lead_submit"
+          >
+            Llamadme gratis <Icon name="arrow" size={16} />
+          </Button>
+        </form>
+        <div class="fcontact__or" aria-hidden="true">o si lo prefieres</div>
+        <Button
+          variant="secondary"
+          size="lg"
+          block
+          href={waUrl()}
+          id="funnel-wa"
+          target="_blank"
+          rel="noopener"
+          data-conversion-event="funnel_whatsapp_click"
+        >
+          Continuar por WhatsApp <Icon name="arrow" size={16} />
+        </Button>
+        <p class="funnel__legal">
+          Al continuar aceptas nuestra <a
+            href="/privacidad"
+            target="_blank"
+            rel="noopener">política de privacidad</a
+          >.
+        </p>
+      </div>
+    </div>
+
+    {/* Final — confirmación tras dejar el móvil */}
     <div class="fstep fconfirm" data-panel="5" hidden>
       <div class="fconfirm__badge" aria-hidden="true">
         <Icon name="check" size={30} />
       </div>
       <p class="t-eyebrow fstep__eyebrow">¡Todo listo!</p>
       <h2 class="t-h2 fstep__title">
-        Tu consultor de servicios te llamará en los próximos 5 minutos
+        Te llamamos en los próximos 5 minutos
       </h2>
       <p class="t-lede fstep__lede fstep__lede--mid">
-        ¿Prefieres agendarla por WhatsApp? Escríbenos y te atendemos cuando
-        mejor te venga.
+        Tu consultor te llamará al <strong
+          class="fconfirm__phone"
+          id="funnel-phone-echo">número que nos has dejado</strong
+        > para activar tu oferta.
       </p>
       <div class="fstep__actions">
-        <Button
-          variant="primary"
-          size="lg"
-          href={WHATSAPP_URL}
-          target="_blank"
-          rel="noopener"
-          data-conversion-event="funnel_whatsapp_click"
-        >
-          Agendar por WhatsApp <Icon name="arrow" size={16} />
-        </Button>
         <button class="link-arrow" type="button" id="funnel-confirm-home"
           >Volver a la página de inicio ›</button
         >
@@ -269,6 +275,8 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
 </div>
 
 <script>
+  import { waUrl } from "../../utils/whatsapp";
+
   (() => {
     const funnelEl = document.getElementById("funnel");
     if (!funnelEl) return;
@@ -304,27 +312,33 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
       "funnel-phone",
     ) as HTMLInputElement;
     const phoneErr = document.getElementById("funnel-phone-err") as HTMLElement;
-    const skipBtn = document.getElementById("funnel-skip") as HTMLButtonElement;
+    const phoneEcho = document.getElementById(
+      "funnel-phone-echo",
+    ) as HTMLElement;
+    const waBtn = document.getElementById("funnel-wa") as HTMLAnchorElement;
 
     const paidEcho = document.getElementById("funnel-paid-echo") as HTMLElement;
-    const resultsSub = document.getElementById(
-      "funnel-results-sub",
-    ) as HTMLElement;
     const homeBtn = document.getElementById("funnel-home") as HTMLButtonElement;
     const confirmHomeBtn = document.getElementById(
       "funnel-confirm-home",
     ) as HTMLButtonElement;
 
+    // Paneles: 0-2 preguntas, 3 resultados, 4 contacto, 5 confirmación.
+    const RESULTS = 3;
+    const CONTACT = 4;
+    const CONFIRM = 5;
+
     let step = 0;
-    let submitted = false;
     let provider = "";
     let service = "";
-    let leadId: number | null = null;
+    let chosen = "";
+    let waLeadSent = false;
 
     function render() {
       panels.forEach((p) => {
         p.hidden = Number(p.dataset.panel) !== step;
       });
+      // 3 puntos = 3 pasos; de los resultados en adelante quedan todos completados
       dots.forEach((d, i) => {
         d.classList.toggle("is-active", i === step);
         d.classList.toggle("is-done", i < step);
@@ -334,11 +348,8 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
       if (backLabel) backLabel.textContent = atStart ? "Cerrar" : "Atrás";
       if (iconClose) iconClose.style.display = atStart ? "block" : "none";
       if (iconBack) iconBack.style.display = atStart ? "none" : "block";
-      if (step === 4) {
+      if (step === RESULTS) {
         paidEcho.textContent = paidInput.value || "42";
-        resultsSub.textContent = submitted
-          ? "Te contactaremos para activar la que elijas."
-          : "Ordenadas por ahorro neto frente a tu factura actual.";
       }
     }
 
@@ -349,9 +360,11 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
     }
     const next = () => goTo(step + 1);
 
-    async function sendLead(withPhone: boolean) {
+    // Sin teléfono no se crea el lead: nace al dejar el móvil (canal "llamada")
+    // o al elegir WhatsApp (canal "whatsapp", sin número: nos escribe el usuario).
+    async function sendLead(canal: "llamada" | "whatsapp", telefono: string) {
       try {
-        const res = await fetch("/api/lead.php", {
+        await fetch("/api/lead.php", {
           method: "POST",
           keepalive: true,
           headers: { "Content-Type": "application/json" },
@@ -359,32 +372,26 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
             pago_actual: paidInput.value,
             compania_actual: provider,
             servicio_actual: service,
-            telefono: withPhone ? phoneInput.value.replace(/\s/g, "") : "",
+            servicio_elegido: chosen,
+            canal_contacto: canal,
+            telefono,
             consentimiento: 1,
           }),
         });
-        const data = await res.json();
-        if (data && data.ok && data.id) leadId = data.id;
       } catch (_) {
         /* no bloqueamos la UX si falla la red */
       }
     }
 
-    async function sendElegido(oferta: string) {
-      if (!leadId) return;
-      try {
-        await fetch("/api/lead-elegido.php", {
-          method: "POST",
-          keepalive: true,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: leadId, servicio_elegido: oferta }),
-        });
-      } catch (_) {}
+    function setChosen(offer: string) {
+      chosen = offer;
+      waBtn.href = waUrl(offer);
     }
 
     function open(detail: { paid?: string; step?: number } = {}) {
       if (detail.paid != null) paidInput.value = String(detail.paid);
-      submitted = false;
+      chosen = "";
+      waLeadSent = false;
       funnel.hidden = false;
       // forzar reflow para que la transición de opacidad corra
       void funnel.offsetWidth;
@@ -435,7 +442,7 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
         });
       });
 
-    // ---- service ----
+    // ---- service → resultados ----
     funnel
       .querySelectorAll<HTMLButtonElement>("[data-service]")
       .forEach((chip) => {
@@ -449,17 +456,17 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
         });
       });
 
-    // ---- elegir oferta → confirmación ----
+    // ---- elegir oferta → contacto ----
     funnel
       .querySelectorAll<HTMLButtonElement>("[data-offer-choose]")
       .forEach((btn) => {
         btn.addEventListener("click", () => {
-          sendElegido(btn.dataset.offerChoose || "");
-          goTo(5);
+          setChosen(btn.dataset.offerChoose || "");
+          goTo(CONTACT);
         });
       });
 
-    // ---- phone ----
+    // ---- teléfono → confirmación ----
     phoneForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const clean = phoneInput.value.replace(/\s/g, "");
@@ -471,9 +478,9 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
       }
       phoneErr.hidden = true;
       phoneInput.classList.remove("input--error");
-      submitted = true;
-      sendLead(true);
-      next();
+      phoneEcho.textContent = phoneInput.value.trim();
+      sendLead("llamada", clean);
+      goTo(CONFIRM);
     });
     phoneInput.addEventListener("input", () => {
       if (!phoneErr.hidden) {
@@ -481,10 +488,12 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
         phoneInput.classList.remove("input--error");
       }
     });
-    skipBtn.addEventListener("click", () => {
-      submitted = false;
-      sendLead(false);
-      next();
+
+    // ---- WhatsApp: registra el lead (una sola vez) y el enlace abre wa.me ----
+    waBtn.addEventListener("click", () => {
+      if (waLeadSent) return;
+      waLeadSent = true;
+      sendLead("whatsapp", "");
     });
 
     // ---- nav ----
@@ -634,10 +643,10 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
   .amount--center {
     margin-inline: auto;
   }
-  .amount__euro { 
-    font-size: clamp(48px, 9vw, 64px); 
+  .amount__euro {
+    font-size: clamp(48px, 9vw, 64px);
   }
-  
+
   .funnel__phone {
     max-width: 360px;
     margin-inline: auto;
@@ -647,8 +656,24 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
     margin-top: 8px;
     text-align: left;
   }
-  .funnel__skip {
+
+  .fcontact__cta {
+    margin-top: 18px;
+  }
+  .fcontact__or {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-block: 16px;
+    font-size: 13px;
     color: var(--c-fg-muted);
+  }
+  .fcontact__or::before,
+  .fcontact__or::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: var(--c-border);
   }
 
   .funnel__legal {
@@ -741,6 +766,11 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
     color: var(--c-bg);
     background: var(--c-accent);
   }
+  .fconfirm__phone {
+    color: var(--c-fg);
+    font-weight: 600;
+    white-space: nowrap;
+  }
 
   .fresults {
     width: 100%;
@@ -799,6 +829,16 @@ const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent
   .frow__save .lab {
     font-size: 12px;
     color: var(--c-fg-muted);
+  }
+  /* CTA "Elegir": todas grises; al pasar el ratón, negro */
+  .frow :global(.frow__cta) {
+    transition:
+      background-color 0.25s var(--ease-apple),
+      color 0.25s var(--ease-apple);
+  }
+  .frow :global(.frow__cta:hover) {
+    background: var(--c-fg);
+    color: var(--c-bg);
   }
 
   @media (max-width: 520px) {

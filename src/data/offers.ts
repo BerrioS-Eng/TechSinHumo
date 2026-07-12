@@ -23,7 +23,18 @@ export function fmtPrice(n: number): string {
   return priceFmt.format(n);
 }
 
-/** ahorro humano: "< 1 €/mes" o "12 €/mes" */
-export function fmtSave(n: number): string {
-  return (n < 1 ? '< 1' : Math.round(n)) + ' €/mes';
+/** ahorro anual a partir del mensual guardado en offers.json: 12.4 → 149 */
+function saveYear(n: number): number {
+  return Math.round(n * 12);
+}
+
+/** cifra del ahorro anual, siempre en positivo: 12.4 → "149", 0.01 → "< 1" */
+export function fmtSaveYearNum(n: number): string {
+  const y = saveYear(n);
+  return y < 1 ? '< 1' : String(y);
+}
+
+/** ahorro anual humano: 12.4 → "149 €/año" */
+export function fmtSaveYear(n: number): string {
+  return fmtSaveYearNum(n) + ' €/año';
 }

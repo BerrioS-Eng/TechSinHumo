@@ -40,8 +40,9 @@ if ($COMPANIAS === null || $SERVICIOS === null) {
 $pago    = filter_var($in['pago_actual'] ?? null, FILTER_VALIDATE_FLOAT);
 $compId  = trim((string)($in['compania_actual'] ?? ''));
 $servId  = trim((string)($in['servicio_actual'] ?? ''));
+$elegido = trim((string)($in['servicio_elegido'] ?? ''));
+$canal   = trim((string)($in['canal_contacto'] ?? ''));
 $telRaw  = preg_replace('/\s+/', '', (string)($in['telefono'] ?? ''));
-$dejoTel = $telRaw !== '';
 $consent = !empty($in['consentimiento']) ? 1 : 0;
 
 if ($pago === false || $pago < 1 || $pago > 500) {
@@ -53,9 +54,18 @@ if (!isset($COMPANIAS[$compId])) {
 if (!isset($SERVICIOS[$servId])) {
     http_response_code(422); echo json_encode(['ok'=>false,'error'=>'servicio']); exit;
 }
-if ($dejoTel && !preg_match('/^[6789]\d{8}$/', $telRaw)) {
+if ($elegido !== '' && mb_strlen($elegido) > 255) {
+    http_response_code(422); echo json_encode(['ok'=>false,'error'=>'elegido']); exit;
+}
+if (!in_array($canal, ['llamada', 'whatsapp'], true)) {
+    http_response_code(422); echo json_encode(['ok'=>false,'error'=>'canal']); exit;
+}
+// Sin teléfono no se crea el lead. La única excepción es el canal WhatsApp:
+// ahí es el usuario quien nos escribe, y esa elección queda en canal_contacto.
+if ($canal === 'llamada' && !preg_match('/^[6789]\d{8}$/', $telRaw)) {
     http_response_code(422); echo json_encode(['ok'=>false,'error'=>'telefono']); exit;
 }
+if ($canal === 'whatsapp') { $telRaw = ''; }
 
 // --- Conexión (credenciales fuera de git) ---
 $cfg = require __DIR__ . '/config.php';
@@ -71,18 +81,21 @@ try {
 
 $stmt = $pdo->prepare(
     "INSERT INTO leads
-       (pago_actual, compania_actual, servicio_actual, telefono, consentimiento, ip_origen, user_agent, origen)
-     VALUES (:pago, :comp, :serv, :tel, :cons, :ip, :ua, :org)"
+       (pago_actual, compania_actual, servicio_actual, servicio_elegido, canal_contacto,
+        telefono, consentimiento, ip_origen, user_agent, origen)
+     VALUES (:pago, :comp, :serv, :eleg, :canal, :tel, :cons, :ip, :ua, :org)"
 );
 $stmt->execute([
-    ':pago' => $pago,
-    ':comp' => $COMPANIAS[$compId],
-    ':serv' => $SERVICIOS[$servId],
-    ':tel'  => $dejoTel ? $telRaw : null,
-    ':cons' => $consent,
-    ':ip'   => $_SERVER['REMOTE_ADDR'] ?? null,
-    ':ua'   => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255),
-    ':org'  => substr($_SERVER['HTTP_REFERER'] ?? '', 0, 255),
+    ':pago'  => $pago,
+    ':comp'  => $COMPANIAS[$compId],
+    ':serv'  => $SERVICIOS[$servId],
+    ':eleg'  => $elegido !== '' ? $elegido : null,
+    ':canal' => $canal,
+    ':tel'   => $telRaw !== '' ? $telRaw : null,
+    ':cons'  => $consent,
+    ':ip'    => $_SERVER['REMOTE_ADDR'] ?? null,
+    ':ua'    => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255),
+    ':org'   => substr($_SERVER['HTTP_REFERER'] ?? '', 0, 255),
 ]);
 
 echo json_encode(['ok' => true, 'id' => (int)$pdo->lastInsertId()]);
