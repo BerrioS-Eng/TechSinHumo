@@ -1,16 +1,55 @@
 {
   "providers": [
-    { "id": "movistar", "name": "Movistar", "note": "ex-Telefónica" },
-    { "id": "vodafone", "name": "Vodafone" },
-    { "id": "orange", "name": "Orange" },
-    { "id": "masmovil", "name": "MásMóvil" },
-    { "id": "digi", "name": "Digi" },
-    { "id": "o2", "name": "O2" },
-    { "id": "yoigo", "name": "Yoigo" },
-    { "id": "pepephone", "name": "Pepephone" },
-    { "id": "lowi", "name": "Lowi" },
-    { "id": "simyo", "name": "Simyo" },
-    { "id": "finetwork", "name": "Finetwork" },
-    { "id": "otra", "name": "Otra…" }
+    {
+      "id": "movistar",
+      "name": "Movistar",
+      "note": ""
+    },
+    {
+      "id": "vodafone",
+      "name": "Vodafone",
+      "note": ""
+    },
+    {
+      "id": "orange",
+      "name": "Orange",
+      "note": ""
+    },
+    {
+      "id": "masmovil",
+      "name": "MásMóvil"
+    },
+    {
+      "id": "digi",
+      "name": "Digi"
+    },
+    {
+      "id": "o2",
+      "name": "O2"
+    },
+    {
+      "id": "yoigo",
+      "name": "Yoigo"
+    },
+    {
+      "id": "pepephone",
+      "name": "Pepephone"
+    },
+    {
+      "id": "lowi",
+      "name": "Lowi"
+    },
+    {
+      "id": "simyo",
+      "name": "Simyo"
+    },
+    {
+      "id": "finetwork",
+      "name": "Finetwork"
+    },
+    {
+      "id": "otra",
+      "name": "Otra…"
+    }
   ]
 }
