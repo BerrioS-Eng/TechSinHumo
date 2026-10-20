@@ -1,0 +1,8 @@
+# false = no se puede crear un issue en blanco; hay que elegir plantilla.
+blank_issues_enabled: false
+
+# Enlaces que aparecen al final del selector (no crean issues).
+contact_links:
+  - name: Guía de calidad y pruebas
+    url: https://github.com/BerrioS-Eng/TechSinHumo/blob/build/docs/calidad/estrategia-de-pruebas.md
+    about: Lee cómo escribir historias, bugs y tareas antes de crear un issue.

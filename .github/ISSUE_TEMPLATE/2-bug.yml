@@ -1,0 +1,90 @@
+# Formulario para defectos. Un bug describe lo que pasa MAL;
+# la historia describe lo que DEBE pasar.
+name: Bug
+description: Algo no funciona como dicen los criterios de aceptación.
+title: "BUG: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Un buen reporte permite a otra persona **reproducir el fallo sin preguntarte nada**.
+
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción
+      description: Qué falla, en una o dos frases.
+    validations:
+      required: true
+
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Pasos para reproducirlo
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Resultado esperado
+      description: Lo que debería pasar. Si es posible, cita el criterio (ej. "HU-01 CA-4").
+    validations:
+      required: true
+
+  - type: textarea
+    id: obtenido
+    attributes:
+      label: Resultado obtenido
+      description: Lo que pasa realmente.
+    validations:
+      required: true
+
+  - type: input
+    id: historia
+    attributes:
+      label: Historia afectada
+      placeholder: "#2"
+
+  # Severidad = impacto técnico (lo juzga QA).
+  # Prioridad = urgencia de negocio (la decide el PO en el tablero). No son lo mismo.
+  - type: dropdown
+    id: severidad
+    attributes:
+      label: Severidad
+      options:
+        - "Crítica: bloquea el uso o se pierden datos"
+        - "Alta: falla una funcionalidad principal"
+        - "Media: falla algo secundario o hay alternativa"
+        - "Baja: detalle visual o de texto"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: entorno
+    attributes:
+      label: Entorno
+      options:
+        - Producción (techsinhumo.com)
+        - Local (pnpm dev / preview)
+        - CI (GitHub Actions)
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o mensajes de error
+      description: Pega el texto tal cual; se mostrará como bloque de código.
+      render: shell
+
+  - type: textarea
+    id: evidencias
+    attributes:
+      label: Capturas o evidencias
+      description: Arrastra aquí imágenes o vídeos.
