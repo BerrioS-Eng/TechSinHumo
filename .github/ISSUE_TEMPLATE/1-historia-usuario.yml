@@ -1,0 +1,52 @@
+# Formulario para historias de usuario (épica → historia → tareas).
+name: Historia de usuario
+description: Una funcionalidad contada desde el punto de vista de quien la usa.
+title: "HU-XX · "
+labels: ["user-story"]
+body:
+  # Solo texto de ayuda: no se rellena ni se guarda en el issue.
+  - type: markdown
+    attributes:
+      value: |
+        Antes de crearla, comprueba que cumple **INVEST**: independiente, negociable,
+        valiosa, estimable, pequeña y **testable**.
+        Al crearla, asígnale su **épica** como issue padre (barra lateral → Relationships).
+
+  - type: textarea
+    id: historia
+    attributes:
+      label: Historia
+      description: Quién la necesita, qué quiere hacer y para qué.
+      placeholder: "**Como** visitante, **quiero** dejar mi teléfono, **para** que un consultor me llame."
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      description: Uno por línea. Si un criterio no se puede convertir en una prueba, no está bien escrito.
+      value: |
+        - [ ] CA-1: **Dado** … **cuando** … **entonces** …
+        - [ ] CA-2: **Dado** … **cuando** … **entonces** …
+    validations:
+      required: true
+
+  - type: textarea
+    id: preguntas
+    attributes:
+      label: Preguntas abiertas para el PO
+      description: Si hay alguna, añade la etiqueta ask-po. La historia no pasa a Ready hasta resolverlas.
+      placeholder: "- ¿Se aceptan céntimos en el importe?"
+
+  - type: checkboxes
+    id: pruebas
+    attributes:
+      label: Tipos de prueba previstos
+      description: Marca los que apliquen. Luego se reflejan en la matriz de trazabilidad.
+      options:
+        - label: Unitaria (Vitest)
+        - label: Integración
+        - label: Aceptación E2E (Playwright)
+        - label: Performance (Lighthouse / k6)
+        - label: Accesibilidad (axe)

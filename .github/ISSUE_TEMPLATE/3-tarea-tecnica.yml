@@ -1,0 +1,41 @@
+# Formulario para trabajo técnico que no es una funcionalidad visible
+# (CI, pruebas, refactor, documentación).
+name: Tarea técnica
+description: Trabajo interno (CI, pruebas, refactor, documentación).
+title: "T-XX · "
+labels: ["tech-task"]
+body:
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+      description: Qué se consigue con esta tarea y por qué importa.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alcance
+    attributes:
+      label: Alcance
+      description: Qué entra y, tan importante como eso, qué NO entra.
+      value: |
+        **Incluye:**
+        -
+        **No incluye:**
+        -
+
+  - type: textarea
+    id: terminado
+    attributes:
+      label: Criterios de terminado
+      description: Cómo se comprueba que la tarea está hecha.
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: input
+    id: relacionados
+    attributes:
+      label: Historias o RNF relacionados
+      placeholder: "#5, #10, RNF-04"
